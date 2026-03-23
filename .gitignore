@@ -1,0 +1,39 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Lint & Test
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Vscode
+.vscode
+
+# macos
+*.DS_Store
+
+# ipynb checkpoints
+**.ipynb_checkpoints
+
+.env
+.gradio
+.adk
+*.db
+*.db-journal
+implementations/report_generation/reports/*
+implementations/report_generation/data/*.zip
+implementations/report_generation/data/*.csv
+implementations/report_generation/data/*.xls
+implementations/report_generation/data/*.xlsx
+implementations/aml_investigation/data/*.jsonl
+
+# Credentials
+cred/*
