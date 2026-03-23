@@ -3,12 +3,28 @@ name = "aml-agent-eval"
 version = "0.1.0"
 description = "AML agent evaluation data preparation and tooling"
 requires-python = ">=3.12,<4.0"
-dependencies = []
+dependencies = [
+    "google-adk>=1.0.0",
+    "google-genai>=1.0.0",
+    "sqlalchemy>=2.0",
+    "sqlglot>=20.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "python-dotenv",
+    "weaviate-client>=4.20.4",
+]
 
 [project.optional-dependencies]
-weaviate = [
-    "weaviate-client>=4.9.5",
-    "python-dotenv",
-    "pandas>=1.5.0",
+test = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-timeout>=2.0",
 ]
+
+[project.scripts]
+aml-agent = "aml_agent.runner:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
 
