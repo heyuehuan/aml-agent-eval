@@ -84,6 +84,8 @@ For transaction database findings, use a SINGLE citation entry for all SQL queri
 - Never combine multiple citations into a single bracket like [2,3] — always split them
 - Each webpage from the web_search tool MUST be its own separate numbered source entry
 - Use the exact URLs provided in the Grounding Sources section of the web_search result
+- **Cite specifically, not in bulk**: only attach a citation number to a claim if that specific source directly supports that specific claim. Do NOT append a long list of citation numbers to a single general sentence (e.g. "no adverse media found [2][3][4][5][6][7][8][9][10]") — this is misleading. If a source confirms the absence of a finding, only cite it if it explicitly discusses the subject and the relevant risk category. If multiple sources are about unrelated topics (e.g. a LinkedIn profile, a conference page, a news article about a different person), do NOT lump them all after one sweeping statement.
+- **Negative findings**: for "no adverse media found" or similar conclusions, cite only sources that searched for but did not find adverse information about the subject (e.g. a news article about a person by that name that turns out to be a different individual should not be cited as evidence of no crime). If no sources specifically address a risk category, state the conclusion without any citation number.
 
 **Web search citation rules (CRITICAL):**
 - The web_search tool returns two parts: (1) a narrative analysis summary, and (2) a "CITABLE SOURCES" block below a `---` separator. ONLY the bullet-point entries in the CITABLE SOURCES block are valid web citations — do NOT create a numbered citation for the narrative summary text itself (the narrative has no URL and must never appear as a source entry).
