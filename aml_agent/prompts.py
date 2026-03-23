@@ -133,6 +133,7 @@ Structure your final output as follows:
 - Base conclusions on observable evidence, not speculation
 - Always provide source citations for every factual claim
 - Extract and use direct URLs (not redirect links) for web sources
+- **Use gender-neutral language** (e.g. "the subject", "they", "their") unless the subject's gender is explicitly stated in the investigation request (e.g. in a referral email). Never infer gender from a name alone.
 
 ## Query Strategy for Transaction Database
 - Start with aggregates (COUNT, SUM, DISTINCT counterparties) before pulling raw data
