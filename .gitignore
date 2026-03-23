@@ -37,3 +37,4 @@ implementations/aml_investigation/data/*.jsonl
 
 # Credentials
 cred/*
+reference_implementation/*

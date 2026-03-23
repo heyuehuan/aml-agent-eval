@@ -1,0 +1,14 @@
+[project]
+name = "aml-agent-eval"
+version = "0.1.0"
+description = "AML agent evaluation data preparation and tooling"
+requires-python = ">=3.12,<4.0"
+dependencies = []
+
+[project.optional-dependencies]
+weaviate = [
+    "weaviate-client>=4.9.5",
+    "python-dotenv",
+    "pandas>=1.5.0",
+]
+
