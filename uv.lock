@@ -164,8 +164,10 @@ dependencies = [
     { name = "weaviate-client" },
 ]
 
-[package.optional-dependencies]
-test = [
+[package.dev-dependencies]
+dev = [
+    { name = "iniconfig" },
+    { name = "pluggy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
 ]
@@ -180,8 +182,6 @@ requires-dist = [
     { name = "opentelemetry-sdk", specifier = ">=1.20.0" },
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.0" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
-    { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.23" },
     { name = "python-dotenv" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rich", specifier = ">=13.0" },
@@ -189,7 +189,14 @@ requires-dist = [
     { name = "sqlglot", specifier = ">=20.0" },
     { name = "weaviate-client", specifier = ">=4.20.4" },
 ]
-provides-extras = ["test"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "iniconfig", specifier = ">=2.0" },
+    { name = "pluggy", specifier = ">=1.5" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23" },
+]
 
 [[package]]
 name = "annotated-doc"

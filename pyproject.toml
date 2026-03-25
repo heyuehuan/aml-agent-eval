@@ -20,14 +20,16 @@ dependencies = [
     "openinference-instrumentation-google-adk>=0.1.0",
 ]
 
-[project.optional-dependencies]
-test = [
-    "pytest>=8.0",
-    "pytest-asyncio>=0.23",
-]
-
 [project.scripts]
 aml-agent = "aml_agent.runner:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "iniconfig>=2.0",
+    "pluggy>=1.5",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
