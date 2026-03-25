@@ -11,14 +11,19 @@ dependencies = [
     "pydantic>=2.0",
     "pydantic-settings>=2.0",
     "python-dotenv",
+    "pyyaml>=6.0",
+    "rich>=13.0",
     "weaviate-client>=4.20.4",
+    "langfuse>=3.10.3",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.20.0",
+    "openinference-instrumentation-google-adk>=0.1.0",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
-    "pytest-timeout>=2.0",
 ]
 
 [project.scripts]

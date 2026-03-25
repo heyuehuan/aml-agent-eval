@@ -6,6 +6,7 @@ real-time due diligence searches for AML investigations.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import re
@@ -14,6 +15,13 @@ import urllib.error
 
 from google import genai
 from google.genai import types
+from openinference.semconv.trace import (
+    DocumentAttributes,
+    MessageAttributes,
+    SpanAttributes,
+    OpenInferenceSpanKindValues,
+)
+from opentelemetry import trace as _otel_trace
 
 logger = logging.getLogger(__name__)
 
@@ -260,24 +268,100 @@ class WebSearchTool:
 
         Extracted so that ``web_search`` can call it for the retry without
         duplicating the boilerplate.
+
+        Creates an OpenTelemetry child span following the OpenInference
+        semantic conventions so that Langfuse renders the correct input
+        (query + full prompt), output (response text), grounding sources, and
+        token usage.  When no OTel provider is configured (local mode) the
+        span is a no-op NonRecordingSpan.
         """
         logger.info("web_search: attempt %d query=%r", attempt, query)
         grounding_tool = types.Tool(google_search=types.GoogleSearch())
         config = types.GenerateContentConfig(tools=[grounding_tool])
         instructions = _SEARCH_INSTRUCTION.format(search_input=query)
-        response = client.models.generate_content(
-            model=self._model_name,
-            contents=instructions,
-            config=config,
-        )
-        result_text = response.text if response.text else "No results returned."
+
+        _tracer = _otel_trace.get_tracer(__name__)
+        with _tracer.start_as_current_span("web_search.generate_content") as span:
+            # --- span kind: LLM (nested inside the ADK-created TOOL span) ---
+            span.set_attribute(
+                SpanAttributes.OPENINFERENCE_SPAN_KIND,
+                OpenInferenceSpanKindValues.LLM.value,
+            )
+
+            # --- model identification (both OTel genai + OpenInference) ---
+            span.set_attribute("gen_ai.system", "google_genai")
+            span.set_attribute("gen_ai.operation.name", "chat")
+            span.set_attribute("gen_ai.request.model", self._model_name)
+            span.set_attribute(SpanAttributes.LLM_MODEL_NAME, self._model_name)
+            span.set_attribute("web_search.attempt", attempt)
+
+            # --- input: concise query value + full prompt as a chat message ---
+            span.set_attribute(SpanAttributes.INPUT_VALUE, query)
+            span.set_attribute(SpanAttributes.INPUT_MIME_TYPE, "text/plain")
+            span.set_attribute(
+                f"{SpanAttributes.LLM_INPUT_MESSAGES}.0.{MessageAttributes.MESSAGE_ROLE}",
+                "user",
+            )
+            span.set_attribute(
+                f"{SpanAttributes.LLM_INPUT_MESSAGES}.0.{MessageAttributes.MESSAGE_CONTENT}",
+                instructions,
+            )
+
+            # --- call the model ---
+            response = client.models.generate_content(
+                model=self._model_name,
+                contents=instructions,
+                config=config,
+            )
+
+            result_text = response.text if response.text else "No results returned."
+            sources = self._extract_grounding_sources(response)
+
+            # --- output: raw model response text (mirrors how the ADK LLM spans work) ---
+            span.set_attribute(
+                f"{SpanAttributes.LLM_OUTPUT_MESSAGES}.0.{MessageAttributes.MESSAGE_ROLE}",
+                "model",
+            )
+            span.set_attribute(
+                f"{SpanAttributes.LLM_OUTPUT_MESSAGES}.0.{MessageAttributes.MESSAGE_CONTENT}",
+                result_text,
+            )
+            span.set_attribute(SpanAttributes.OUTPUT_VALUE, result_text)
+            span.set_attribute(SpanAttributes.OUTPUT_MIME_TYPE, "text/plain")
+
+            # --- grounding sources as retrieval documents ---
+            for i, (title, url, excerpt) in enumerate(sources):
+                span.set_attribute(
+                    f"{SpanAttributes.RETRIEVAL_DOCUMENTS}.{i}.{DocumentAttributes.DOCUMENT_CONTENT}",
+                    excerpt or title,
+                )
+                span.set_attribute(
+                    f"{SpanAttributes.RETRIEVAL_DOCUMENTS}.{i}.{DocumentAttributes.DOCUMENT_METADATA}",
+                    json.dumps({"title": title, "url": url}, ensure_ascii=False),
+                )
+
+            # --- token usage (OpenInference + OTel genai conventions) ---
+            um = getattr(response, "usage_metadata", None)
+            if um:
+                pt = getattr(um, "prompt_token_count", None)
+                ct = getattr(um, "candidates_token_count", None)
+                tt = getattr(um, "total_token_count", None)
+                if pt is not None:
+                    span.set_attribute(SpanAttributes.LLM_TOKEN_COUNT_PROMPT, pt)
+                    span.set_attribute("gen_ai.usage.input_tokens", pt)
+                if ct is not None:
+                    span.set_attribute(SpanAttributes.LLM_TOKEN_COUNT_COMPLETION, ct)
+                    span.set_attribute("gen_ai.usage.output_tokens", ct)
+                if tt is not None:
+                    span.set_attribute(SpanAttributes.LLM_TOKEN_COUNT_TOTAL, tt)
+                    span.set_attribute("gen_ai.usage.total_tokens", tt)
+
         logger.info(
             "web_search: attempt %d response (%d chars). First 200: %s",
             attempt,
             len(result_text),
             result_text[:200].replace("\n", " "),
         )
-        sources = self._extract_grounding_sources(response)
         logger.info("web_search: attempt %d grounding sources: %d", attempt, len(sources))
         return result_text, sources
 

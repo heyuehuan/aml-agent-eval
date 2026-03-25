@@ -31,6 +31,7 @@ from google.genai import types
 
 from aml_agent.agent import create_aml_agent
 from aml_agent.config import Configs
+from aml_agent.tracing import CallbackTracer, parse_md_table
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -79,22 +80,7 @@ logging.getLogger("google_genai.types").setLevel(logging.ERROR)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-def _parse_md_table(text: str) -> tuple[list[str], list[list[str]]] | None:
-    """Parse a markdown pipe-table into (columns, rows). Returns None if not a table."""
-    lines = [ln for ln in text.strip().splitlines() if ln.strip().startswith("|")]
-    if len(lines) < 2:
-        return None
-
-    def _cells(line: str) -> list[str]:
-        return [c.strip() for c in line.strip().strip("|").split("|")]
-
-    columns = _cells(lines[0])
-    rows: list[list[str]] = []
-    for line in lines[2:]:  # skip the separator row (--- | --- | ...)
-        vals = _cells(line)
-        if len(vals) == len(columns):
-            rows.append(vals)
-    return columns, rows
+# _parse_md_table imported from aml_agent.tracing
 
 
 def _parse_report_sections(markdown: str) -> dict[str, Any]:
@@ -172,69 +158,6 @@ def _parse_report_sections(markdown: str) -> dict[str, Any]:
     }
 
 
-def _serialize_part(part: Any, *, include_thoughts: bool = False) -> dict[str, Any] | None:
-    """Serialize a single Content Part to a JSON-friendly dict.
-
-    Parameters
-    ----------
-    part : Any
-        A google.genai.types.Part object.
-    include_thoughts : bool
-        If True, include thought parts (marked with ``"thought": true``).
-        Otherwise thought parts are skipped entirely.
-    """
-    is_thought = getattr(part, "thought", False)
-    if is_thought and not include_thoughts:
-        return None  # skip internal reasoning tokens
-    result: dict[str, Any] | None = None
-    if part.text is not None:
-        result = {"type": "text", "text": part.text}
-    else:
-        fc = getattr(part, "function_call", None)
-        if fc:
-            result = {
-                "type": "function_call",
-                "name": fc.name,
-                "id": getattr(fc, "id", None),
-                "args": dict(fc.args) if fc.args else {},
-            }
-        else:
-            fr = getattr(part, "function_response", None)
-            if fr:
-                resp = fr.response or {}
-                resp_val = resp.get("result", str(resp)) if isinstance(resp, dict) else str(resp)
-                result = {
-                    "type": "function_response",
-                    "name": fr.name,
-                    "id": getattr(fr, "id", None),
-                    "result": resp_val,
-                }
-    if result is not None and is_thought:
-        result["thought"] = True
-    return result
-
-
-def _serialize_content(content: Any) -> dict[str, Any] | str | list | None:
-    """Serialize a types.Content (or plain string / list) for JSON output."""
-    if content is None:
-        return None
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        return [_serialize_content(c) for c in content]
-    parts = getattr(content, "parts", None)
-    if parts is None:
-        return str(content)
-    serialized_parts = []
-    for p in parts:
-        s = _serialize_part(p, include_thoughts=True)
-        if s is not None:
-            serialized_parts.append(s)
-    return {
-        "role": getattr(content, "role", None),
-        "parts": serialized_parts,
-    }
-
 
 async def run_investigation(
     subject: str,
@@ -262,72 +185,14 @@ async def run_investigation(
         The full investigation report text and a structured artifacts dict
         containing the raw tool call/response audit trail.
     """
-    # ── Full LLM call trace — captured via ADK before/after model callbacks ──
-    # System instruction is the same across all calls; stored once at the top
-    # level.  Each call entry records only the NEW contents added since the
-    # previous call (the delta), avoiding massive duplication.
-    llm_system_instruction: dict[str, Any] | str | None = None
-    llm_calls: list[dict[str, Any]] = []
-    _call_counter = 0
-    _prev_contents_len = 0  # track how many contents the previous call had
-
-    def _before_model_cb(callback_context, llm_request):
-        nonlocal _call_counter, _prev_contents_len, llm_system_instruction
-
-        # Capture system instruction once (it's identical for every call)
-        if llm_system_instruction is None and llm_request.config and llm_request.config.system_instruction:
-            llm_system_instruction = _serialize_content(llm_request.config.system_instruction)
-
-        # Only serialize the NEW contents added since the last call
-        all_contents = llm_request.contents
-        new_contents = [_serialize_content(c) for c in all_contents[_prev_contents_len:]]
-        total_len = len(all_contents)
-
-        llm_calls.append({
-            "call_index": _call_counter,
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            "request": {
-                "model": llm_request.model,
-                "new_contents": new_contents,
-                "total_contents_count": total_len,
-            },
-            "response": None,  # filled in by after callback
-            "usage": None,     # filled in by after callback
-        })
-        _prev_contents_len = total_len
-        _call_counter += 1
-        return None  # continue with normal LLM call
-
-    def _after_model_cb(callback_context, llm_response):
-        # Attach the response and token usage to the most recent call entry
-        resp_data: dict[str, Any] = {}
-        if llm_response.content:
-            resp_data["content"] = _serialize_content(llm_response.content)
-        if llm_response.finish_reason:
-            resp_data["finish_reason"] = str(llm_response.finish_reason)
-
-        usage_data: dict[str, Any] | None = None
-        um = getattr(llm_response, "usage_metadata", None)
-        if um:
-            usage_data = {
-                "prompt_token_count": getattr(um, "prompt_token_count", None),
-                "candidates_token_count": getattr(um, "candidates_token_count", None),
-                "total_token_count": getattr(um, "total_token_count", None),
-                "thoughts_token_count": getattr(um, "thoughts_token_count", None),
-                "cached_content_token_count": getattr(um, "cached_content_token_count", None),
-            }
-
-        if llm_calls:
-            llm_calls[-1]["response"] = resp_data
-            llm_calls[-1]["usage"] = usage_data
-        return None  # continue with original response
+    tracer = CallbackTracer(capture_tools_info=False)
 
     agent = create_aml_agent(
         configs=configs,
         temperature=temperature,
         timeout_sec=timeout_sec,
-        before_model_callback=_before_model_cb,
-        after_model_callback=_after_model_cb,
+        before_model_callback=tracer.before_model_callback,
+        after_model_callback=tracer.after_model_callback,
     )
 
     runner = Runner(
@@ -348,7 +213,6 @@ async def run_investigation(
         role="user",
     )
 
-    # Audit trail — captured from ADK events
     _started_at = datetime.datetime.now(datetime.timezone.utc)
     _version = _get_git_version()
     artifacts: dict[str, Any] = {
@@ -361,8 +225,6 @@ async def run_investigation(
         "tool_calls": [],  # list of {tool, args, response, timestamp} — compact tool audit
         "sql_results": [],  # list of {query, columns, rows} from execute tool calls
     }
-    _pending_calls: dict[str, dict] = {}  # call_id → {tool, args, timestamp}
-
     final_text = ""
     async for event in runner.run_async(
         session_id=session_id,
@@ -370,47 +232,7 @@ async def run_investigation(
         new_message=message,
     ):
         if event.content and event.content.parts:
-            # ── Maintain compact tool_calls audit trail ──
-            for part in event.content.parts:
-                if hasattr(part, "function_call") and part.function_call:
-                    fc = part.function_call
-                    call_id = getattr(fc, "id", None) or fc.name
-                    _pending_calls[call_id] = {
-                        "tool": fc.name,
-                        "args": dict(fc.args) if fc.args else {},
-                        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                        "response": None,
-                    }
-                if hasattr(part, "function_response") and part.function_response:
-                    fr = part.function_response
-                    call_id = getattr(fr, "id", None) or fr.name
-                    resp_text = ""
-                    if fr.response:
-                        if isinstance(fr.response, dict):
-                            resp_text = fr.response.get("result", str(fr.response))
-                        else:
-                            resp_text = str(fr.response)
-                    if call_id in _pending_calls:
-                        tc_entry = _pending_calls.pop(call_id)
-                        tc_entry["response"] = resp_text
-                        artifacts["tool_calls"].append(tc_entry)
-                        # Accumulate raw SQL rows for the interactive transaction table
-                        if tc_entry["tool"] == "execute" and resp_text and not resp_text.startswith("Query Error"):
-                            parsed = _parse_md_table(resp_text)
-                            if parsed and len(parsed[0]) > 2 and parsed[1]:
-                                artifacts["sql_results"].append({
-                                    "query": tc_entry["args"].get("query", ""),
-                                    "columns": parsed[0],
-                                    "rows": parsed[1],
-                                })
-                    else:
-                        # Response without matching call (tool name as id)
-                        artifacts["tool_calls"].append({
-                            "tool": fr.name,
-                            "args": {},
-                            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                            "response": resp_text,
-                        })
+            tracer.process_event_parts(event.content.parts)
 
         if event.is_final_response() and event.content:
             final_text = "".join(
@@ -421,39 +243,40 @@ async def run_investigation(
             if match:
                 final_text = final_text[match.start():]
 
-    # ── Structured report breakdown ──
     report_parsed = _parse_report_sections(final_text)
 
     artifacts["report_markdown"] = final_text
     artifacts["report"] = report_parsed
 
-    # ── Token usage summary ──
-    total_usage = {
-        "total_llm_calls": len(llm_calls),
-        "prompt_token_count": 0,
-        "candidates_token_count": 0,
-        "thoughts_token_count": 0,
-        "total_token_count": 0,
-    }
-    for call in llm_calls:
-        u = call.get("usage")
-        if u:
-            for key in ("prompt_token_count", "candidates_token_count", "thoughts_token_count", "total_token_count"):
-                total_usage[key] += u.get(key) or 0
+    tracer.mark_finished()
+    trace_data = tracer.to_dict()
 
     _finished_at = datetime.datetime.now(datetime.timezone.utc)
     artifacts["finished_at"] = _finished_at.isoformat()
     artifacts["elapsed_sec"] = round((_finished_at - _started_at).total_seconds(), 3)
 
-    artifacts["token_usage"] = total_usage
-    artifacts["llm_call_history"] = {
-        "system_instruction": llm_system_instruction,
-        "calls": llm_calls,
-    }
+    artifacts["tool_calls"] = trace_data["tool_calls"]
+    artifacts["token_usage"] = trace_data["token_usage"]
+    artifacts["llm_call_history"] = trace_data["llm_call_history"]
+    artifacts["trace_metrics"] = trace_data["trace_metrics"]
+
+    for tc_entry in artifacts["tool_calls"]:
+        resp_text = tc_entry.get("response", "")
+        if (
+            tc_entry["tool"] == "execute"
+            and resp_text
+            and not resp_text.startswith("Query Error")
+        ):
+            parsed = _parse_md_table(resp_text)
+            if parsed and len(parsed[0]) > 2 and parsed[1]:
+                artifacts["sql_results"].append({
+                    "query": tc_entry["args"].get("query", ""),
+                    "columns": parsed[0],
+                    "rows": parsed[1],
+                })
 
     await runner.close()
 
-    # Clean up tool resources (Weaviate connection, SQLAlchemy pool)
     for tool in getattr(agent, "tools", []):
         inner = getattr(tool, "func", None)
         owner = getattr(inner, "__self__", None) if inner else None
@@ -474,12 +297,21 @@ def main():
     parser.add_argument("--html", action="store_true", help="Render output as HTML (auto-detected from .html extension)")
     parser.add_argument("--temperature", "-t", type=float, default=None, help="LLM temperature")
     parser.add_argument("--timeout", type=int, default=None, help="Timeout in seconds")
+    parser.add_argument("--langfuse", action="store_true", help="Enable Langfuse tracing via OpenTelemetry")
 
     args = parser.parse_args()
     subject = args.subject or args.subject_flag
 
     if not subject:
         parser.error("Subject name is required. Usage: python -m aml_agent.runner 'John Doe'")
+
+    if args.langfuse:
+        from aml_agent.evaluation.tracing import init_tracing
+        ok = init_tracing(service_name="aml-agent")
+        if ok:
+            print("Langfuse tracing enabled.")
+        else:
+            print("Warning: Langfuse tracing could not be initialised (check env vars).")
 
     print(f"Starting AML investigation for: {subject}")
     print("-" * 60)
@@ -492,8 +324,6 @@ def main():
 
     output_as_html = args.html or (args.output and args.output.lower().endswith(".html"))
 
-    # Use the subject name the LLM extracted and placed in the report title,
-    # falling back to the raw input if parsing finds nothing.
     _title_m = re.search(r"#\s+AML Investigation Report:\s*(.+)", report)
     display_subject = _title_m.group(1).strip() if _title_m else subject
 
