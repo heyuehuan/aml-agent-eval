@@ -32,6 +32,32 @@ full artifacts dict containing `tool_calls`, `sql_results`,
 **Run-level** (`RunEvaluatorFunction`) — computes aggregate metrics across
 all items (e.g. mean recall).
 
+## How `input`, `output`, and `expected_output` are populated
+
+`input` and `expected_output` are **the same dict** — both are the full
+CSV row parsed by `experiment.load_test_cases()`. The split exists to
+match the Langfuse `EvaluatorFunction` protocol signature; locally they
+point to the same object.
+
+```
+CSV row (dict)  ──────────────────────────────────────────────────────────────
+  test_case_id                      "TC-002"
+  test_case_entity_id               "IND-9"
+  test_case_info_input              "Investigate John Smith …"     ← prompt
+  test_case_details                 "…"
+  expected_kb_watchlist_matches     ["OFAC SDN List", …]           ← parsed from JSON
+  expected_open_search_results      ["…"]                          ← parsed from JSON
+  expected_transaction_matches      ["TXN-001", …]                 ← parsed from JSON
+  expected_transaction_matches_details  [{…}, …]                   ← parsed from JSON
+```
+
+Fields with JSON-encoded values (`expected_*` and
+`transaction_variation_details`) are automatically parsed into Python
+objects by `load_test_cases()`.
+
+`output` is the agent's artifacts dict loaded from
+`Test_<TC-ID>.artifacts.json`.
+
 ## (a) Code-based Graders
 
 Write a plain function that inspects the artifacts and returns
@@ -48,7 +74,10 @@ def my_grader(
     metadata: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> list[Evaluation]:
-    # output["tool_calls"], output["sql_results"], output["report_markdown"], …
+    # Read ground truth from expected_output (same dict as input)
+    expected = expected_output.get("expected_transaction_matches") or []
+    # Read agent evidence from output
+    tool_calls = output.get("tool_calls", [])
     score = ...  # your deterministic logic
     return [Evaluation(name="my_metric", value=score, comment="…")]
 ```
