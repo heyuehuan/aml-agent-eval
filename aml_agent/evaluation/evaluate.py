@@ -31,7 +31,11 @@ from pathlib import Path
 
 from aml_agent.evaluation.eval_config import load_eval_config
 from aml_agent.evaluation.experiment import run_local_experiment
-from aml_agent.evaluation.graders import internal_kb_grader, internal_kb_agent_precision_llm_grader
+from aml_agent.evaluation.graders import (
+    internal_kb_grader,
+    internal_kb_agent_precision_llm_grader,
+    report_aml_risk_level_accuracy_llm_grader,
+)
 from aml_agent.evaluation.types import ExperimentResult
 
 
@@ -193,6 +197,18 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    # Load .env from the project root so GOOGLE_API_KEY and other secrets are
+    # available in all modes (local/langfuse/live) before any grader runs.
+    try:
+        from dotenv import load_dotenv  # type: ignore[import-untyped]
+        _project_root = Path(__file__).resolve().parent.parent.parent
+        for _env_file in (_project_root / ".env", Path(".env")):
+            if _env_file.exists():
+                load_dotenv(_env_file, override=False)
+                break
+    except ImportError:
+        pass
+
     cfg = load_eval_config(args.config)
 
     if args.live:
@@ -208,6 +224,7 @@ def _build_evaluator_list(args) -> list:
     evaluators = [internal_kb_grader]
     if not getattr(args, "llm_eval_off", False):
         evaluators.append(internal_kb_agent_precision_llm_grader)
+        evaluators.append(report_aml_risk_level_accuracy_llm_grader)
     return evaluators
 
 

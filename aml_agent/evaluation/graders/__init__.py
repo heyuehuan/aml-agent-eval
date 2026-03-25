@@ -12,6 +12,7 @@ graders.
 from .internal_kb import internal_kb_grader
 from .internal_kb_llm import internal_kb_agent_precision_llm_grader
 from .llm_judge import LLMJudgeConfig, run_llm_judge, run_llm_judge_structured
+from .report import report_aml_risk_level_accuracy_llm_grader
 
 __all__ = [
     "internal_kb_grader",
@@ -19,4 +20,5 @@ __all__ = [
     "LLMJudgeConfig",
     "run_llm_judge",
     "run_llm_judge_structured",
+    "report_aml_risk_level_accuracy_llm_grader",
 ]
