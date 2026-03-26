@@ -36,6 +36,8 @@ from aml_agent.evaluation.graders import (
     internal_kb_agent_precision_llm_grader,
     report_aml_risk_level_accuracy_llm_grader,
     report_completeness_grader,
+    open_search_urls_reachable_pct_grader,
+    open_search_results_relevance_llm_grader,
 )
 from aml_agent.evaluation.types import ExperimentResult
 
@@ -224,11 +226,13 @@ def _build_evaluator_list(args) -> list:
     """Return the list of evaluators, excluding LLM-judge ones if --llm-eval-off."""
     evaluators = [
         internal_kb_grader,
-        report_completeness_grader
+        report_completeness_grader,
+        open_search_urls_reachable_pct_grader,
     ]
     if not getattr(args, "llm_eval_off", False):
         evaluators.append(internal_kb_agent_precision_llm_grader)
         evaluators.append(report_aml_risk_level_accuracy_llm_grader)
+        evaluators.append(open_search_results_relevance_llm_grader)
     return evaluators
 
 
