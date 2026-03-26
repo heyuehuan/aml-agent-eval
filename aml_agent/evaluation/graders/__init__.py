@@ -12,6 +12,8 @@ graders.
 from .internal_kb import internal_kb_grader
 from .internal_kb_llm import internal_kb_agent_precision_llm_grader
 from .llm_judge import LLMJudgeConfig, run_llm_judge, run_llm_judge_structured
+from .run import tool_completeness_grader
+from .sql import sql_quality_grader, sql_safety_grader
 
 __all__ = [
     "internal_kb_grader",
@@ -19,4 +21,7 @@ __all__ = [
     "LLMJudgeConfig",
     "run_llm_judge",
     "run_llm_judge_structured",
+    "tool_completeness_grader",
+    "sql_quality_grader",
+    "sql_safety_grader"
 ]

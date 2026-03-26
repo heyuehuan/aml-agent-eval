@@ -31,7 +31,13 @@ from pathlib import Path
 
 from aml_agent.evaluation.eval_config import load_eval_config
 from aml_agent.evaluation.experiment import run_local_experiment
-from aml_agent.evaluation.graders import internal_kb_grader, internal_kb_agent_precision_llm_grader
+from aml_agent.evaluation.graders import \
+    internal_kb_grader, \
+    internal_kb_agent_precision_llm_grader, \
+    tool_completeness_grader, \
+    sql_quality_grader, \
+    sql_safety_grader
+
 from aml_agent.evaluation.types import ExperimentResult
 
 
@@ -206,7 +212,10 @@ def main() -> None:
 def _build_evaluator_list(args) -> list:
     """Return the list of evaluators, excluding LLM-judge ones if --llm-eval-off."""
     evaluators = [internal_kb_grader]
+    evaluators.append(tool_completeness_grader)
+    evaluators.append(sql_safety_grader)
     if not getattr(args, "llm_eval_off", False):
+        evaluators.append(sql_quality_grader)
         evaluators.append(internal_kb_agent_precision_llm_grader)
     return evaluators
 
