@@ -40,4 +40,6 @@ data/localized_weaviate/
 
 # Credentials
 cred/*
+
+# Reference implementation scripts
 reference_implementation/*

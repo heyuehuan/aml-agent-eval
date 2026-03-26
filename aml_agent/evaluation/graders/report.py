@@ -1,6 +1,7 @@
 """Report-quality graders.
 
-Evaluates the final investigation report — e.g. risk-level accuracy.
+Evaluates the final investigation report — e.g. risk-level accuracy,
+structural completeness.
 
 See ``CONTRIBUTING_EVALUATION.md`` for guidance on adding graders.
 
@@ -12,12 +13,26 @@ Metrics
     The judge reads the expected output context (excluding raw transactions)
     and the agent's report to determine whether the adjudicated risk level
     is accurate.  Returns 1.0 (correct) or 0.0 (incorrect).
+
+``report_completeness``
+    Code-based (no LLM) check that all five required sections are present in
+    the report markdown.  Returns a float in [0.0, 1.0] equal to the fraction
+    of required sections found.  Full score (1.0) only when all five sections
+    are present.
+
+    Required sections (matched as Markdown headings, case-insensitive):
+      1. Risk Assessment
+      2. Internal Knowledge Base Findings
+      3. Wire Transactions
+      4. External Search Findings
+      5. Sources  (Citations)
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any
 
 from aml_agent.evaluation.types import Evaluation
@@ -211,6 +226,135 @@ def report_aml_risk_level_accuracy_llm_grader(
     except Exception as exc:
         logger.exception("LLM judge failed for %s", METRIC_NAME)
         return [build_judge_error_evaluation(metric_name=METRIC_NAME, error=exc)]
+
+
+# ---------------------------------------------------------------------------
+# report_completeness — code-based, no LLM
+# ---------------------------------------------------------------------------
+
+COMPLETENESS_METRIC_NAME = "report_completeness"
+
+# Each entry: (canonical label, list of regex patterns that match the heading).
+# A section is found when ANY pattern matches a Markdown heading line
+# (## ... or # ...) in the report, case-insensitively.
+_REQUIRED_SECTIONS: list[tuple[str, list[str]]] = [
+    (
+        "Risk Assessment",
+        [r"risk\s+assessment"],
+    ),
+    (
+        "Internal Knowledge Base Findings",
+        [r"internal\s+knowledge\s+base", r"knowledge\s+base\s+findings?"],
+    ),
+    (
+        "Wire Transactions",
+        [r"wire\s+transactions?", r"transaction\s+findings?"],
+    ),
+    (
+        "External Search Findings",
+        [r"external\s+search", r"web\s+search\s+findings?", r"open.source\s+search"],
+    ),
+    (
+        "Sources / Citations",
+        [r"^#{1,3}\s+sources?\b", r"^#{1,3}\s+citations?\b", r"^#{1,3}\s+references?\b"],
+    ),
+]
+
+# Pre-compile: heading line pattern + per-section keyword patterns
+_HEADING_RE = re.compile(r"^#{1,4}\s+(.+)$", re.MULTILINE)
+
+
+def _section_patterns() -> list[tuple[str, list[re.Pattern[str]]]]:
+    compiled = []
+    for label, patterns in _REQUIRED_SECTIONS:
+        compiled.append(
+            (label, [re.compile(p, re.IGNORECASE) for p in patterns])
+        )
+    return compiled
+
+
+_SECTION_PATTERNS = _section_patterns()
+
+
+def _check_sections(report_markdown: str) -> dict[str, bool]:
+    """Return a dict mapping each required section label → whether it was found."""
+    # Collect all heading text lines
+    headings = [m.group(1).strip() for m in _HEADING_RE.finditer(report_markdown)]
+    # Also check full heading lines (including ##) for patterns that anchor to ^
+    heading_lines = [m.group(0).strip() for m in _HEADING_RE.finditer(report_markdown)]
+
+    found: dict[str, bool] = {}
+    for label, patterns in _SECTION_PATTERNS:
+        matched = False
+        for pat in patterns:
+            # Try matching against heading text
+            if any(pat.search(h) for h in headings):
+                matched = True
+                break
+            # Try matching against full heading line (e.g. "## Sources")
+            if any(pat.search(hl) for hl in heading_lines):
+                matched = True
+                break
+        found[label] = matched
+    return found
+
+
+def report_completeness_grader(
+    input: Any,  # noqa: A002
+    output: Any,
+    expected_output: Any,
+    metadata: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -> list[Evaluation]:
+    """Code-based check that all required report sections are present.
+
+    Does **not** call an LLM — uses regex heading detection only.
+
+    Returns
+    -------
+    list[Evaluation]
+        Single evaluation: ``report_completeness`` in [0.0, 1.0].
+        Score = (number of sections found) / (total required sections).
+        1.0 means all five sections are present.
+    """
+    del input, expected_output, metadata, kwargs
+
+    report = _extract_report(output)
+
+    if not report.strip():
+        return [
+            Evaluation(
+                name=COMPLETENESS_METRIC_NAME,
+                value=0.0,
+                comment="No report found in agent output.",
+                metadata={"sections_found": {}, "sections_missing": [label for label, _ in _REQUIRED_SECTIONS]},
+            )
+        ]
+
+    section_results = _check_sections(report)
+    n_found = sum(section_results.values())
+    n_total = len(section_results)
+    score = n_found / n_total
+
+    missing = [label for label, present in section_results.items() if not present]
+    present = [label for label, present in section_results.items() if present]
+
+    comment_parts = [f"{n_found}/{n_total} required sections present."]
+    if missing:
+        comment_parts.append(f"Missing: {', '.join(missing)}.")
+
+    return [
+        Evaluation(
+            name=COMPLETENESS_METRIC_NAME,
+            value=score,
+            comment=" ".join(comment_parts),
+            metadata={
+                "sections_found": present,
+                "sections_missing": missing,
+                "section_detail": section_results,
+            },
+        )
+    ]
 
 
 __all__ = ["report_aml_risk_level_accuracy_llm_grader"]
