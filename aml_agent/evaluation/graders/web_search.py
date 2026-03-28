@@ -80,15 +80,38 @@ def _extract_citation_urls(output: Any) -> list[str]:
     return urls
 
 
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+}
+
+# HTTP status codes that prove the server is up but won't serve the content
+# to automated clients — the URL itself is reachable.
+_REACHABLE_BLOCKED_CODES = {429, 403, 401}
+
+
 def _is_url_reachable(url: str) -> bool:
-    """Return True if the URL responds with a non-error HTTP status."""
+    """Return True if the URL responds with a non-error HTTP status.
+
+    429/403/401 are treated as reachable: they prove the server is online and
+    the URL resolves — the server is simply rate-limiting or gating access.
+    """
     try:
-        resp = requests.head(url, timeout=_REQUEST_TIMEOUT, allow_redirects=True)
-        if resp.status_code < 400:
+        resp = requests.head(
+            url, timeout=_REQUEST_TIMEOUT, allow_redirects=True, headers=_BROWSER_HEADERS
+        )
+        if resp.status_code < 400 or resp.status_code in _REACHABLE_BLOCKED_CODES:
             return True
         # Some servers reject HEAD; fall back to GET with minimal download.
-        with requests.get(url, timeout=_REQUEST_TIMEOUT, allow_redirects=True, stream=True) as resp:
-            return resp.status_code < 400
+        with requests.get(
+            url, timeout=_REQUEST_TIMEOUT, allow_redirects=True,
+            stream=True, headers=_BROWSER_HEADERS
+        ) as resp:
+            return resp.status_code < 400 or resp.status_code in _REACHABLE_BLOCKED_CODES
     except requests.RequestException:
         return False
 

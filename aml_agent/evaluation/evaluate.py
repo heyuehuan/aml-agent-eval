@@ -36,6 +36,9 @@ from aml_agent.evaluation.graders import (
     internal_kb_agent_precision_llm_grader,
     report_aml_risk_level_accuracy_llm_grader,
     report_completeness_grader,
+    sql_result_score_recall_grader,
+    sql_result_score_precision_grader,
+    transaction_aggregation_score_llm_grader,
     open_search_urls_reachable_pct_grader,
     open_search_results_relevance_llm_grader,
 )
@@ -227,11 +230,14 @@ def _build_evaluator_list(args) -> list:
     evaluators = [
         internal_kb_grader,
         report_completeness_grader,
+        sql_result_score_recall_grader,
+        sql_result_score_precision_grader,
         open_search_urls_reachable_pct_grader,
     ]
     if not getattr(args, "llm_eval_off", False):
         evaluators.append(internal_kb_agent_precision_llm_grader)
         evaluators.append(report_aml_risk_level_accuracy_llm_grader)
+        evaluators.append(transaction_aggregation_score_llm_grader)
         evaluators.append(open_search_results_relevance_llm_grader)
     return evaluators
 
