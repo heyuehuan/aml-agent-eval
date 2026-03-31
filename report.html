@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Time AML Agent Report — Gpomct Grupo Empresarial</title>
+<style>
+
+/* === Reset & Base === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #f0f2f5;
+    color: #2c3e50;
+    line-height: 1.65;
+}
+
+/* === Page wrapper === */
+.page {
+    max-width: 900px;
+    margin: 32px auto 64px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    overflow: hidden;
+}
+
+/* === Header === */
+.header {
+    background: linear-gradient(135deg, #1a2540 0%, #2c3e6e 100%);
+    color: #fff;
+    padding: 36px 40px 28px;
+    position: relative;
+}
+.header-logo {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.70;
+    margin-bottom: 10px;
+}
+.header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+}
+.header-subject {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+.header-meta {
+    font-size: 12px;
+    opacity: 0.65;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.header-meta span { display: flex; align-items: center; gap: 5px; }
+
+/* === Risk badge === */
+.risk-badge-wrap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #c0392b;
+    color: #ffffff;
+    border: 2px solid #922b21;
+    border-radius: 6px;
+    padding: 10px 22px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    text-transform: uppercase;
+}
+.risk-badge .risk-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+    opacity: 0.85;
+    flex-shrink: 0;
+}
+
+/* === Divider === */
+.divider {
+    height: 4px;
+    background: linear-gradient(to right, #c0392b, #922b21);
+}
+
+/* === Content area === */
+.content { padding: 12px 0 24px; }
+
+/* === Section === */
+.section {
+    border-bottom: 1px solid #eaecef;
+    transition: background 0.15s;
+}
+.section:last-child { border-bottom: none; }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 40px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+}
+.section-header:hover { background: #f7f8fa; }
+
+.section-icon { font-size: 18px; flex-shrink: 0; }
+.section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a2540;
+    flex: 1;
+    letter-spacing: 0.1px;
+}
+.section-arrow {
+    font-size: 12px;
+    color: #95a0b0;
+    transition: transform 0.2s;
+}
+
+.section-body {
+    padding: 4px 40px 20px 68px;
+    font-size: 14px;
+    color: #3a4a5c;
+}
+
+/* === Typography === */
+.section-body p { margin-bottom: 10px; }
+.section-body h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2540;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e0e4ea;
+}
+.section-body ul { margin: 8px 0 10px 18px; }
+.section-body ul li { margin-bottom: 4px; }
+
+.sources-list {
+    padding: 0;
+    list-style: none;
+    counter-reset: source-counter;
+}
+.sources-list li {
+    counter-increment: source-counter;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: #f7f9fc;
+    border-radius: 5px;
+    border-left: 3px solid #2c3e6e;
+    font-size: 13px;
+    line-height: 1.6;
+    align-items: flex-start;
+}
+.sources-list li::before {
+    content: "[" counter(source-counter) "]";
+    font-weight: 700;
+    color: #2c3e6e;
+    flex-shrink: 0;
+    min-width: 28px;
+    padding-top: 1px;
+}
+.src-title {
+    font-weight: 600;
+    color: #1a2540;
+    display: block;
+}
+.src-url {
+    font-size: 12px;
+    color: #2980b9;
+    word-break: break-all;
+    display: block;
+}
+.src-url a {
+    color: #2980b9;
+}
+.src-excerpt {
+    font-size: 12px;
+    color: #5a6a7c;
+    font-style: italic;
+    display: block;
+    margin-top: 2px;
+}
+.src-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* === Inline elements === */
+code.inline-code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 12.5px;
+    background: #eef0f4;
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: #c0392b;
+}
+sup.cite {
+    font-size: 10px;
+    font-weight: 700;
+    color: #2980b9;
+    vertical-align: super;
+    cursor: pointer;
+}
+sup.cite a {
+    color: #2980b9;
+    text-decoration: none;
+    cursor: pointer;
+}
+sup.cite a:hover {
+    text-decoration: underline;
+    color: #c0392b;
+}
+a {
+    color: #2980b9;
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+strong { color: #1a2540; }
+
+/* === Footer === */
+.footer {
+    background: #f7f8fa;
+    border-top: 1px solid #eaecef;
+    padding: 18px 40px;
+    font-size: 11.5px;
+    color: #8a95a3;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* === Transaction data table === */
+.tx-table-wrap {
+    margin: 14px 0 4px;
+}
+.tx-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.tx-filter-input {
+    flex: 1;
+    padding: 7px 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    font-size: 13px;
+    outline: none;
+    color: #2c3e50;
+    transition: border-color 0.15s;
+}
+.tx-filter-input:focus {
+    border-color: #2c3e6e;
+    box-shadow: 0 0 0 2px rgba(44,62,110,0.12);
+}
+.tx-row-count {
+    font-size: 12px;
+    color: #8a95a3;
+    white-space: nowrap;
+}
+.tx-scroll {
+    overflow-x: auto;
+    border: 1px solid #e0e4ea;
+    border-radius: 6px;
+}
+#tx-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 600px;
+}
+#tx-table thead tr {
+    background: #1a2540;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+#tx-table th {
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+}
+#tx-table th:hover {
+    background: #2c3e6e;
+}
+.th-sort-icon {
+    font-size: 10px;
+    opacity: 0.55;
+    margin-left: 4px;
+}
+#tx-table tbody tr:nth-child(even) {
+    background: #f7f9fc;
+}
+#tx-table tbody tr:hover {
+    background: #eef2fa;
+}
+#tx-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #eaecef;
+    color: #2c3e50;
+    vertical-align: top;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#tx-table td:hover {
+    white-space: normal;
+    overflow: visible;
+    background: #fffbe6;
+    position: relative;
+    z-index: 2;
+}
+
+/* === Print styles === */
+@media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; border-radius: 0; max-width: 100%; }
+    .section-header { cursor: default; }
+    .section-body { display: block !important; }
+    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .risk-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .divider { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sources-list li { -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; }
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-logo">Real Time AML Agent &nbsp;·&nbsp; Report</div>
+    <div class="header-subject">Gpomct Grupo Empresarial</div>
+    <div class="risk-badge-wrap">
+      <h1>Real Time AML Agent Report</h1>
+      <div class="risk-badge">
+        <span class="risk-dot"></span>
+        HIGH RISK
+      </div>
+    </div>
+    <div class="header-meta">
+      <span>📅 March 24, 2026</span>
+      <span>⚙️ Generated 2026-03-24 14:13 EDT</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="content">
+    
+    <div class="section " id="section-2">
+        <div class="section-header" onclick="toggleSection('section-2')">
+            <span class="section-icon">📋</span>
+            <span class="section-title">Summary</span>
+            <span class="section-arrow" id="section-2-arrow">▼</span>
+        </div>
+        <div class="section-body" id="section-2-body" style="display:block">
+            <p>GPOMCT Grupo Empresarial S.A. de C.V. (referred to as &quot;GPOMCT&quot;) has been identified as a Mexican wholesale currency dealer and currency exchange business that pleaded guilty in the United States to operating an unlicensed money transmitting business and was cited for anti-money laundering deficiencies <sup class="cite"><a href="#src-1">[1]</a></sup> <sup class="cite"><a href="#src-2">[2]</a></sup> <sup class="cite"><a href="#src-6">[6]</a></sup> <sup class="cite"><a href="#src-7">[7]</a></sup>. The company was ordered to forfeit $1.1 million and sentenced to three years&#x27; probation for using the U.S. financial system to process large amounts of currency at high risk for including criminal proceeds <sup class="cite"><a href="#src-1">[1]</a></sup>. Investigations were conducted by Homeland Security Investigations (HSI), Federal Deposit Insurance Corporation Office of Inspector General (FDIC OIG), U.S. Customs and Border Protection, and San Diego County Sheriff&#x27;s Department <sup class="cite"><a href="#src-1">[1]</a></sup>. The entity has 2 incoming wire transactions totaling 781572.79 <sup class="cite"><a href="#src-8">[8]</a></sup>.</p>
+
+        </div>
+    </div>
+    <div class="section " id="section-3">
+        <div class="section-header" onclick="toggleSection('section-3')">
+            <span class="section-icon">🔍</span>
+            <span class="section-title">Internal Knowledge Base Findings</span>
+            <span class="section-arrow" id="section-3-arrow">▼</span>
+        </div>
+        <div class="section-body" id="section-3-body" style="display:block">
+            <p>A search of the internal knowledge base for &quot;Gpomct Grupo Empresarial&quot; did not yield any direct matches. Several low-scoring, fuzzy matches for unrelated Russian entities were found but are not considered relevant to this subject.</p>
+
+        </div>
+    </div>
+    <div class="section " id="section-4">
+        <div class="section-header" onclick="toggleSection('section-4')">
+            <span class="section-icon">💸</span>
+            <span class="section-title">Wire Transactions</span>
+            <span class="section-arrow" id="section-4-arrow">▼</span>
+        </div>
+        <div class="section-body" id="section-4-body" style="display:block">
+            <p>The transaction database shows 2 incoming wire transfers to GPOMCT Grupo Empresarial, totaling 781572.79 USD. These transactions occurred after the period of the alleged unlicensed operations (2019-2021). The transactions are described as a &quot;Loan repayment&quot; for 289252.85 USD and a &quot;Trade settlement&quot; for 492319.94 CAD, both originating from individuals <sup class="cite"><a href="#src-8">[8]</a></sup>.</p>
+
+<div class="tx-table-wrap">
+  <div class="tx-controls">
+    <input id="tx-filter" type="text" placeholder="&#128269; Filter transactions…"
+           oninput="txFilter()" class="tx-filter-input">
+    <span class="tx-row-count" id="tx-row-count">2 rows</span>
+  </div>
+  <div class="tx-scroll">
+    <table id="tx-table">
+      <thead><tr><th onclick="txSort(0)">transaction_id<span class="th-sort-icon">⇅</span></th><th onclick="txSort(1)">amount<span class="th-sort-icon">⇅</span></th><th onclick="txSort(2)">currency<span class="th-sort-icon">⇅</span></th><th onclick="txSort(3)">transaction_datetime<span class="th-sort-icon">⇅</span></th><th onclick="txSort(4)">sender_name<span class="th-sort-icon">⇅</span></th><th onclick="txSort(5)">sender_address<span class="th-sort-icon">⇅</span></th><th onclick="txSort(6)">receiver_name<span class="th-sort-icon">⇅</span></th><th onclick="txSort(7)">receiver_address<span class="th-sort-icon">⇅</span></th><th onclick="txSort(8)">memo<span class="th-sort-icon">⇅</span></th></tr></thead>
+      <tbody><tr><td title="81ce4a88-dbb0-4029-adf9-6982b2850cbb">81ce4a88-dbb0-4029-adf9-6982b2850cbb</td><td title="289252.85">289252.85</td><td title="USD">USD</td><td title="2025-05-13T17:55:48">2025-05-13T17:55:48</td><td title="AMANDA CAMACHO">AMANDA CAMACHO</td><td title="4431 AMANDA POINTS, WEST SOPHIAVILLE, AB R6G3A1">4431 AMANDA POINTS, WEST SOPHIAVILLE, AB R6G3A1</td><td title="GPOMCT GRUPO EMPRESARIAL">GPOMCT GRUPO EMPRESARIAL</td><td title="6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2">6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2</td><td title="Loan repayment UNSX1VSW">Loan repayment UNSX1VSW</td></tr><tr><td title="3e7dfa3f-d7c9-428f-8027-63b715241e59">3e7dfa3f-d7c9-428f-8027-63b715241e59</td><td title="492319.94">492319.94</td><td title="CAD">CAD</td><td title="2025-11-04T18:47:36">2025-11-04T18:47:36</td><td title="RONALD CONLEY">RONALD CONLEY</td><td title="3825 BOYD POINT APT. 705, NORTH ELAINE, NL C3J 8T9">3825 BOYD POINT APT. 705, NORTH ELAINE, NL C3J 8T9</td><td title="GPOMCT GRUPO EMPRESARIAL">GPOMCT GRUPO EMPRESARIAL</td><td title="6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2">6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2</td><td title="Trade settlement K9TKK1YI">Trade settlement K9TKK1YI</td></tr></tbody>
+    </table>
+  </div>
+</div>
+        </div>
+    </div>
+    <div class="section " id="section-5">
+        <div class="section-header" onclick="toggleSection('section-5')">
+            <span class="section-icon">🌐</span>
+            <span class="section-title">External Search Findings</span>
+            <span class="section-arrow" id="section-5-arrow">▼</span>
+        </div>
+        <div class="section-body" id="section-5-body" style="display:block">
+            <p>GPOMCT Grupo Empresarial S.A. de C.V. operates as an international, Mexico-based wholesale currency dealer and currency exchange business, controlling over 40 locations in Mexico <sup class="cite"><a href="#src-1">[1]</a></sup>. The company pleaded guilty to operating an unlicensed money transmitting business in the United States and was cited for anti-money-laundering deficiencies <sup class="cite"><a href="#src-1">[1]</a></sup> <sup class="cite"><a href="#src-6">[6]</a></sup> <sup class="cite"><a href="#src-7">[7]</a></sup>. GPOMCT used the U.S. financial system to process large amounts of currency, some of which were at high risk for being criminal proceeds, without proper registration or compliance with U.S. AML regulations <sup class="cite"><a href="#src-1">[1]</a></sup>. Between 2019 and 2021, GPOMCT imported large volumes of U.S. dollars into the United States, including approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) delivered to a currency exchange in San Ysidro, California <sup class="cite"><a href="#src-1">[1]</a></sup> <sup class="cite"><a href="#src-2">[2]</a></sup> <sup class="cite"><a href="#src-4">[4]</a></sup> <sup class="cite"><a href="#src-5">[5]</a></sup>. The company was ordered to forfeit $1.1 million and sentenced to three years&#x27; probation <sup class="cite"><a href="#src-1">[1]</a></sup>. There is also a mention of a civil proceeding in the Baja California Judicial Bulletin involving GPOMCT Grupo Empresarial related to a mortgaged property <sup class="cite"><a href="#src-9">[9]</a></sup>. No specific sanctions listings or Politically Exposed Person (PEP) status were found in the provided web search results.</p>
+
+        </div>
+    </div>
+    <div class="section collapsed" id="section-6">
+        <div class="section-header" onclick="toggleSection('section-6')">
+            <span class="section-icon">📚</span>
+            <span class="section-title">Sources</span>
+            <span class="section-arrow" id="section-6-arrow">▶</span>
+        </div>
+        <div class="section-body" id="section-6-body" style="display:none">
+            <ol class="sources-list">
+<li id="src-1"><div class="src-body"><span class="src-title">| <a href="https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11" target="_blank" rel="noopener noreferrer">https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11</a></span></div></li>
+<li id="src-2"><div class="src-body"><span class="src-title">fdicoig.gov</span><span class="src-url"><a href="https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf" target="_blank" rel="noopener noreferrer">https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf</a></span><span class="src-excerpt">Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \&quot;MSB 1\&quot;).</span></div></li>
+<li id="src-3"><div class="src-body"><span class="src-title">huggingface.co</span><span class="src-url"><a href="https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&amp;etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22" target="_blank" rel="noopener noreferrer">https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&amp;etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22</a></span><span class="src-excerpt">Aliases/Variants: GPOMCT Grupo Empresarial</span></div></li>
+<li id="src-4"><div class="src-body"><span class="src-title">| <a href="https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united" target="_blank" rel="noopener noreferrer">https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united</a></span></div></li>
+<li id="src-5"><div class="src-body"><span class="src-title">Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com</span><span class="src-url"><a href="https://www.rrbdlaw.com/5975/securities-industry-commentator/" target="_blank" rel="noopener noreferrer">https://www.rrbdlaw.com/5975/securities-industry-commentator/</a></span><span class="src-excerpt">Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \&quot;MSB 1\&quot;).</span></div></li>
+<li id="src-6"><div class="src-body"><span class="src-title">Violation Tracker</span><span class="src-url"><a href="https://violationtracker.goodjobsfirst.org/?company_op=starts&amp;all_offense%5B%5D=Controlled+Substances+Act+violation&amp;penalty_op=%3E&amp;case_type=R&amp;order=agency_code&amp;sort=asc&amp;page=17" target="_blank" rel="noopener noreferrer">https://violationtracker.goodjobsfirst.org/?company_op=starts&amp;all_offense%5B%5D=Controlled+Substances+Act+violation&amp;penalty_op=%3E&amp;case_type=R&amp;order=agency_code&amp;sort=asc&amp;page=17</a></span><span class="src-excerpt">Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.</span></div></li>
+<li id="src-7"><div class="src-body"><span class="src-title">Violation Tracker</span><span class="src-url"><a href="https://violationtracker.goodjobsfirst.org/?company_op=starts&amp;company=&amp;reporting_date_parent_op=starts&amp;reporting_date_parent=&amp;penalty_op=%3E&amp;penalty=&amp;offense_group=financial+offenses&amp;case_category=&amp;govt_level=&amp;agency_code_st%5B%5D=&amp;pen_year%5B%5D=2025&amp;pen_year%5B%5D=2024&amp;pen_year%5B%5D=2023&amp;pen_year%5B%5D=2022&amp;pen_year%5B%5D=2021&amp;pen_year%5B%5D=2020&amp;pen_year%5B%5D=2019&amp;pen_year%5B%5D=2018&amp;pen_year%5B%5D=2017&amp;pen_year%5B%5D=2016&amp;pen_year%5B%5D=2015&amp;pen_year%5B%5D=2014&amp;pen_year%5B%5D=2013&amp;pen_year%5B%5D=2012&amp;pen_year%5B%5D=2011&amp;pen_year%5B%5D=2010&amp;pres_term=&amp;case_type=&amp;free_text=&amp;hq_id=&amp;state=&amp;page=50&amp;order=parent_name&amp;sort=asc" target="_blank" rel="noopener noreferrer">https://violationtracker.goodjobsfirst.org/?company_op=starts&amp;company=&amp;reporting_date_parent_op=starts&amp;reporting_date_parent=&amp;penalty_op=%3E&amp;penalty=&amp;offense_group=financial+offenses&amp;case_category=&amp;govt_level=&amp;agency_code_st%5B%5D=&amp;pen_year%5B%5D=2025&amp;pen_year%5B%5D=2024&amp;pen_year%5B%5D=2023&amp;pen_year%5B%5D=2022&amp;pen_year%5B%5D=2021&amp;pen_year%5B%5D=2020&amp;pen_year%5B%5D=2019&amp;pen_year%5B%5D=2018&amp;pen_year%5B%5D=2017&amp;pen_year%5B%5D=2016&amp;pen_year%5B%5D=2015&amp;pen_year%5B%5D=2014&amp;pen_year%5B%5D=2013&amp;pen_year%5B%5D=2012&amp;pen_year%5B%5D=2011&amp;pen_year%5B%5D=2010&amp;pres_term=&amp;case_type=&amp;free_text=&amp;hq_id=&amp;state=&amp;page=50&amp;order=parent_name&amp;sort=asc</a></span><span class="src-excerpt">Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.</span></div></li>
+<li id="src-8">Wire transaction database</li>
+<li id="src-9"><div class="src-body"><span class="src-title">pjbc.gob.mx</span><span class="src-url"><a href="https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf" target="_blank" rel="noopener noreferrer">https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf</a></span><span class="src-excerpt">Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property.</span></div></li>
+</ol>
+        </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Real Time AML Agent &nbsp;·&nbsp; Confidential &amp; Privileged</span>
+    <span>Report generated: 2026-03-24 14:13 EDT &nbsp;·&nbsp; version: base-agent/26a3567</span>
+  </div>
+
+</div>
+<script>
+function toggleSection(id) {
+    const body = document.getElementById(id + '-body');
+    const arrow = document.getElementById(id + '-arrow');
+    const section = document.getElementById(id);
+    const isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'block' : 'none';
+    arrow.textContent = isHidden ? '▼' : '▶';
+    section.classList.toggle('collapsed', !isHidden);
+}
+
+// === Transaction table: filter & sort ===
+var _txSortCol = -1;
+var _txSortAsc = true;
+
+function txFilter() {
+    var filter = document.getElementById('tx-filter').value.toLowerCase();
+    var tbody = document.querySelector('#tx-table tbody');
+    if (!tbody) return;
+    var rows = tbody.getElementsByTagName('tr');
+    var visible = 0;
+    for (var i = 0; i < rows.length; i++) {
+        var show = rows[i].textContent.toLowerCase().includes(filter);
+        rows[i].style.display = show ? '' : 'none';
+        if (show) visible++;
+    }
+    var countEl = document.getElementById('tx-row-count');
+    if (countEl) countEl.textContent = visible + ' row' + (visible !== 1 ? 's' : '') + (filter ? ' (filtered)' : '');
+}
+
+function txSort(col) {
+    var table = document.getElementById('tx-table');
+    if (!table) return;
+    var tbody = table.querySelector('tbody');
+    var rows = Array.from(tbody.getElementsByTagName('tr'));
+    var asc = (_txSortCol === col) ? !_txSortAsc : true;
+    _txSortCol = col; _txSortAsc = asc;
+    rows.sort(function(a, b) {
+        var aVal = a.cells[col] ? a.cells[col].textContent.trim() : '';
+        var bVal = b.cells[col] ? b.cells[col].textContent.trim() : '';
+        var aNum = parseFloat(aVal.replace(/[,\s$]/g, ''));
+        var bNum = parseFloat(bVal.replace(/[,\s$]/g, ''));
+        if (!isNaN(aNum) && !isNaN(bNum)) return asc ? aNum - bNum : bNum - aNum;
+        return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    });
+    table.querySelectorAll('.th-sort-icon').forEach(function(icon, i) {
+        icon.textContent = i === col ? (asc ? ' ↑' : ' ↓') : ' ⇅';
+    });
+    rows.forEach(function(r) { tbody.appendChild(r); });
+}
+</script>
+</body>
+</html>

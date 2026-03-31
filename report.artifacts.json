@@ -1,0 +1,538 @@
+{
+  "subject": "Gpomct Grupo Empresarial",
+  "session_id": "d9e47748-2a7d-4b06-bb2e-45afd7ce1a45",
+  "version": "base-agent/26a3567",
+  "started_at": "2026-03-24T18:13:00.388337+00:00",
+  "finished_at": "2026-03-24T18:13:49.945307+00:00",
+  "elapsed_sec": 49.557,
+  "tool_calls": [
+    {
+      "tool": "search_knowledgebase",
+      "args": {
+        "keyword": "Gpomct Grupo Empresarial"
+      },
+      "timestamp": "2026-03-24T18:13:04.209283+00:00",
+      "response": "Knowledge Base Search Results for 'Gpomct Grupo Empresarial':\n\nResult 1:\n  Entity ID: NK-ng7ZJVuZRb7CN4iU8KR5Gg\n  Name: Leading Production and Technical Enterprise Granit\n  Source: US OFAC Specially Designated Nationals (SDN)\n  Score: 0.3580\n  Snippet: US OFAC Specially Designated Nationals (SDN)\nName: Leading Production and Technical Enterprise Granit\nType: Organization\nIncorporation Date: 2002-10-18\nRegistration Number: 1027731005323\nTax Number: 7731263174\nSource URL: https://sanctionssearch.ofac.treas.gov/Details.aspx?id=43070\nAlias: Almaz-Antey GPTP Granite / JSC GPTP Granit / Aktsionernoe Oschevstvo Golovnoe Proizvodstvenno-Tehnicheskoe Predpriyatie Granit / JSC Head Technological Enterprise Granit\nAddress: 7 Molodogvardeyskaya Str., 1214\n\nResult 2:\n  Entity ID: NK-YdM8WkEt5eBLiKD663j8or\n  Name: Petrovsky Electromechanical Plant Molot JSC\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3364\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: Petrovsky Electromechanical Plant Molot JSC\nType: LegalEntity\nAlias: Акционерное Общество \"Петровский Электромеханический Завод \"Молот\" and ПЭМЗ \"Молот\" / АО\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n\nResult 3:\n  Entity ID: NK-n3U6g7iQhybo648xwo9w9C\n  Name: MG-Flot LLC\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3228\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: MG-Flot LLC\nType: LegalEntity\nAlias: Transseaport / TransMorFlot / TransMorFlot Shipping Company\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n\nResult 4:\n  Entity ID: NK-PUoiZTPDehyJijQsNWX45v\n  Name: Tactical Missiles Corporation, GosNIIMash JSC\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3216\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: Tactical Missiles Corporation, GosNIIMash JSC\nType: LegalEntity\nAlias: Scientific Research Institute for Mechanical Engineering GosNIIMash JSC\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n\nResult 5:\n  Entity ID: NK-ng7ZJVuZRb7CN4iU8KR5Gg\n  Name: Leading Production and Technical Enterprise Granit\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3180\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: Leading Production and Technical Enterprise Granit\nType: LegalEntity\nAlias: Акционерное общество «Головное производственнотехническое предприятие «Гранит»\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n"
+    },
+    {
+      "tool": "get_schema_info",
+      "args": {},
+      "timestamp": "2026-03-24T18:13:08.364989+00:00",
+      "response": "Table: transactions\n  Columns: transaction_id: TEXT, amount: REAL, currency: TEXT, transaction_datetime: TEXT, sender_name: TEXT, sender_address: TEXT, receiver_name: TEXT, receiver_address: TEXT, memo: TEXT"
+    },
+    {
+      "tool": "execute",
+      "args": {
+        "query": "SELECT COUNT(*) FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%'"
+      },
+      "timestamp": "2026-03-24T18:13:11.232871+00:00",
+      "response": "| COUNT(*) |\n| --- |\n| 2 |"
+    },
+    {
+      "tool": "execute",
+      "args": {
+        "query": "SELECT SUM(amount) FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%'"
+      },
+      "timestamp": "2026-03-24T18:13:11.232893+00:00",
+      "response": "| SUM(amount) |\n| --- |\n| 781572.79 |"
+    },
+    {
+      "tool": "execute",
+      "args": {
+        "query": "SELECT * FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%' LIMIT 10"
+      },
+      "timestamp": "2026-03-24T18:13:11.232897+00:00",
+      "response": "| transaction_id | amount | currency | transaction_datetime | sender_name | sender_address | receiver_name | receiver_address | memo |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 81ce4a88-dbb0-4029-adf9-6982b2850cbb | 289252.85 | USD | 2025-05-13T17:55:48 | AMANDA CAMACHO | 4431 AMANDA POINTS, WEST SOPHIAVILLE, AB R6G3A1 | GPOMCT GRUPO EMPRESARIAL | 6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2 | Loan repayment UNSX1VSW |\n| 3e7dfa3f-d7c9-428f-8027-63b715241e59 | 492319.94 | CAD | 2025-11-04T18:47:36 | RONALD CONLEY | 3825 BOYD POINT APT. 705, NORTH ELAINE, NL C3J 8T9 | GPOMCT GRUPO EMPRESARIAL | 6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2 | Trade settlement K9TKK1YI |"
+    },
+    {
+      "tool": "web_search",
+      "args": {
+        "query": "\"Gpomct Grupo Empresarial\" adverse media financial crime sanctions PEP corporate connections"
+      },
+      "timestamp": "2026-03-24T18:13:13.580299+00:00",
+      "response": "The following is an enhanced due diligence report on GPOMCT Grupo Empresarial S.A. de C.V.:\n\n## 1. Detailed Biographical Information\n\n*   **Full Legal Name:** GPOMCT Grupo Empresarial S.A. de C.V.\n*   **Aliases/Variants:** GPOMCT Grupo Empresarial\n*   **Date and Place of Birth:** Not publicly available.\n*   **Nationality/Citizenship:** Mexican (inferred from being a Mexico-based business)\n*   **Passport/ID Numbers:** Not publicly available.\n*   **Last Known Addresses/Countries of Residence:** Mexico\n*   **Professional Background:** Operates as an international, Mexico-based wholesale currency dealer and currency exchange business. Controls over 40 locations in Mexico.\n\n## 2. Financial Crime Exposure\n\n*   **Allegations/Investigations/Convictions:**\n    *   **Unlicensed Money Transmitting Business:** GPOMCT pleaded guilty to operating an unlicensed money transmitting business in the United States.\n    *   **Anti-Money Laundering Deficiencies:** The company was cited for anti-money-laundering deficiencies.\n    *   **Criminal Proceeds:** GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements.\n*   **Specific Activities:**\n    *   Imported large volumes of U.S. dollars into the United States between 2019 and 2021.\n    *   Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n    *   Used an armored car company to collect currency from MSB 1 as payment and deliver it to a third-party intermediary in Miami, Florida.\n*   **Regulatory Fines/Enforcement Actions:**\n    *   **Forfeiture:** Ordered to forfeit $1.1 million for operating an unlicensed money transmitting business.\n    *   **Probation:** Sentenced to three years' probation.\n    *   **Guilty Plea:** Pleaded guilty to unlawfully operating in the United States.\n\n## 3. Corporate Ownership and Business Interests\n\n*   **Subsidiaries:** Operates through subsidiaries, controlling more than 40 locations in Mexico.\n*   **Business Interests:** Wholesale currency dealer and currency exchange business.\n*   **Jurisdictional Links:** Primarily operates in Mexico, with significant transactions involving the U.S. financial system.\n\n## 4. Regulatory and Person-of-Interest Status\n\n*   **Sanctions Listings:** No specific sanctions listings were found in the provided search results.\n*   **Politically Exposed Person (PEP) Status:** No information found.\n*   **Law Enforcement Interest:**\n    *   Investigated by Homeland Security Investigations (HSI), Federal Deposit Insurance Corporation Office of Inspector General (FDIC OIG), U.S. Customs and Border Protection, and San Diego County Sheriff's Department.\n    *   Pled guilty in the United States District Court for the Southern District of California.\n    *   Sentenced in federal court.\n\n## 5. Related Parties\n\n*   **Immediate Family Members:** No information found.\n*   **Business Partners/Associates:**\n    *   MSB 1: A currency exchange located in San Ysidro, California, that received currency shipments from GPOMCT.\n    *   Armored Car Company: Utilized by GPOMCT for currency transport.\n    *   Third-party intermediary in Miami, Florida: Received currency from the armored car company.\n\n## 6. Negative News and Adverse Media\n\n*   **Controversies/Scandals:** The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n*   **Reputational Incidents:** The guilty plea and sentencing for financial crime significantly impacts its reputation.\n*   **Litigation/Proceedings:**\n    *   A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property. The exact nature of GPOMCT's involvement (plaintiff/defendant) and the status of this case are not fully clear from the snippet.\n\n---\nCITABLE SOURCES (use ONLY these as web citations — do NOT cite the narrative above):\n- &nbsp; | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11 | Criminal Proceeds: GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements\n- fdicoig.gov | https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n- huggingface.co | https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22 | Aliases/Variants: GPOMCT Grupo Empresarial\n- &nbsp; | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n- Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com | https://www.rrbdlaw.com/5975/securities-industry-commentator/ | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n- Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&all_offense%5B%5D=Controlled+Substances+Act+violation&penalty_op=%3E&case_type=R&order=agency_code&sort=asc&page=17 | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n- Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&company=&reporting_date_parent_op=starts&reporting_date_parent=&penalty_op=%3E&penalty=&offense_group=financial+offenses&case_category=&govt_level=&agency_code_st%5B%5D=&pen_year%5B%5D=2025&pen_year%5B%5D=2024&pen_year%5B%5D=2023&pen_year%5B%5D=2022&pen_year%5B%5D=2021&pen_year%5B%5D=2020&pen_year%5B%5D=2019&pen_year%5B%5D=2018&pen_year%5B%5D=2017&pen_year%5B%5D=2016&pen_year%5B%5D=2015&pen_year%5B%5D=2014&pen_year%5B%5D=2013&pen_year%5B%5D=2012&pen_year%5B%5D=2011&pen_year%5B%5D=2010&pres_term=&case_type=&free_text=&hq_id=&state=&page=50&order=parent_name&sort=asc | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n- pjbc.gob.mx | https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf | Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property.\n"
+    }
+  ],
+  "sql_results": [
+    {
+      "query": "SELECT * FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%' LIMIT 10",
+      "columns": [
+        "transaction_id",
+        "amount",
+        "currency",
+        "transaction_datetime",
+        "sender_name",
+        "sender_address",
+        "receiver_name",
+        "receiver_address",
+        "memo"
+      ],
+      "rows": [
+        [
+          "81ce4a88-dbb0-4029-adf9-6982b2850cbb",
+          "289252.85",
+          "USD",
+          "2025-05-13T17:55:48",
+          "AMANDA CAMACHO",
+          "4431 AMANDA POINTS, WEST SOPHIAVILLE, AB R6G3A1",
+          "GPOMCT GRUPO EMPRESARIAL",
+          "6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2",
+          "Loan repayment UNSX1VSW"
+        ],
+        [
+          "3e7dfa3f-d7c9-428f-8027-63b715241e59",
+          "492319.94",
+          "CAD",
+          "2025-11-04T18:47:36",
+          "RONALD CONLEY",
+          "3825 BOYD POINT APT. 705, NORTH ELAINE, NL C3J 8T9",
+          "GPOMCT GRUPO EMPRESARIAL",
+          "6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2",
+          "Trade settlement K9TKK1YI"
+        ]
+      ]
+    }
+  ],
+  "report_markdown": "# AML Investigation Report: Gpomct Grupo Empresarial\n\n## Risk Assessment: HIGH\n\n## Summary\nGPOMCT Grupo Empresarial S.A. de C.V. (referred to as \"GPOMCT\") has been identified as a Mexican wholesale currency dealer and currency exchange business that pleaded guilty in the United States to operating an unlicensed money transmitting business and was cited for anti-money laundering deficiencies [1] [2] [6] [7]. The company was ordered to forfeit $1.1 million and sentenced to three years' probation for using the U.S. financial system to process large amounts of currency at high risk for including criminal proceeds [1]. Investigations were conducted by Homeland Security Investigations (HSI), Federal Deposit Insurance Corporation Office of Inspector General (FDIC OIG), U.S. Customs and Border Protection, and San Diego County Sheriff's Department [1]. The entity has 2 incoming wire transactions totaling 781572.79 [8].\n\n## Internal Knowledge Base Findings\nA search of the internal knowledge base for \"Gpomct Grupo Empresarial\" did not yield any direct matches. Several low-scoring, fuzzy matches for unrelated Russian entities were found but are not considered relevant to this subject.\n\n## Wire Transactions\nThe transaction database shows 2 incoming wire transfers to GPOMCT Grupo Empresarial, totaling 781572.79 USD. These transactions occurred after the period of the alleged unlicensed operations (2019-2021). The transactions are described as a \"Loan repayment\" for 289252.85 USD and a \"Trade settlement\" for 492319.94 CAD, both originating from individuals [8].\n\n## External Search Findings\nGPOMCT Grupo Empresarial S.A. de C.V. operates as an international, Mexico-based wholesale currency dealer and currency exchange business, controlling over 40 locations in Mexico [1]. The company pleaded guilty to operating an unlicensed money transmitting business in the United States and was cited for anti-money-laundering deficiencies [1] [6] [7]. GPOMCT used the U.S. financial system to process large amounts of currency, some of which were at high risk for being criminal proceeds, without proper registration or compliance with U.S. AML regulations [1]. Between 2019 and 2021, GPOMCT imported large volumes of U.S. dollars into the United States, including approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) delivered to a currency exchange in San Ysidro, California [1] [2] [4] [5]. The company was ordered to forfeit $1.1 million and sentenced to three years' probation [1]. There is also a mention of a civil proceeding in the Baja California Judicial Bulletin involving GPOMCT Grupo Empresarial related to a mortgaged property [9]. No specific sanctions listings or Politically Exposed Person (PEP) status were found in the provided web search results.\n\n## Sources\n[1] | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11 | Criminal Proceeds: GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements\n[2] fdicoig.gov | https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[3] huggingface.co | https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22 | Aliases/Variants: GPOMCT Grupo Empresarial\n[4] | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[5] Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com | https://www.rrbdlaw.com/5975/securities-industry-commentator/ | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[6] Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&all_offense%5B%5D=Controlled+Substances+Act+violation&penalty_op=%3E&case_type=R&order=agency_code&sort=asc&page=17 | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n[7] Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&company=&reporting_date_parent_op=starts&reporting_date_parent=&penalty_op=%3E&penalty=&offense_group=financial+offenses&case_category=&govt_level=&agency_code_st%5B%5D=&pen_year%5B%5D=2025&pen_year%5B%5D=2024&pen_year%5B%5D=2023&pen_year%5B%5D=2022&pen_year%5B%5D=2021&pen_year%5B%5D=2020&pen_year%5B%5D=2019&pen_year%5B%5D=2018&pen_year%5B%5D=2017&pen_year%5B%5D=2016&pen_year%5B%5D=2015&pen_year%5B%5D=2014&pen_year%5B%5D=2013&pen_year%5B%5D=2012&pen_year%5B%5D=2011&pen_year%5B%5D=2010&pres_term=&case_type=&free_text=&hq_id=&state=&page=50&order=parent_name&sort=asc | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n[8] Wire transaction database\n[9] pjbc.gob.mx | https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf | Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property.",
+  "report": {
+    "risk_level": "HIGH",
+    "subject": "Gpomct Grupo Empresarial",
+    "sections": [
+      {
+        "heading": "Summary",
+        "body": "GPOMCT Grupo Empresarial S.A. de C.V. (referred to as \"GPOMCT\") has been identified as a Mexican wholesale currency dealer and currency exchange business that pleaded guilty in the United States to operating an unlicensed money transmitting business and was cited for anti-money laundering deficiencies [1] [2] [6] [7]. The company was ordered to forfeit $1.1 million and sentenced to three years' probation for using the U.S. financial system to process large amounts of currency at high risk for including criminal proceeds [1]. Investigations were conducted by Homeland Security Investigations (HSI), Federal Deposit Insurance Corporation Office of Inspector General (FDIC OIG), U.S. Customs and Border Protection, and San Diego County Sheriff's Department [1]. The entity has 2 incoming wire transactions totaling 781572.79 [8]."
+      },
+      {
+        "heading": "Internal Knowledge Base Findings",
+        "body": "A search of the internal knowledge base for \"Gpomct Grupo Empresarial\" did not yield any direct matches. Several low-scoring, fuzzy matches for unrelated Russian entities were found but are not considered relevant to this subject."
+      },
+      {
+        "heading": "Wire Transactions",
+        "body": "The transaction database shows 2 incoming wire transfers to GPOMCT Grupo Empresarial, totaling 781572.79 USD. These transactions occurred after the period of the alleged unlicensed operations (2019-2021). The transactions are described as a \"Loan repayment\" for 289252.85 USD and a \"Trade settlement\" for 492319.94 CAD, both originating from individuals [8]."
+      },
+      {
+        "heading": "External Search Findings",
+        "body": "GPOMCT Grupo Empresarial S.A. de C.V. operates as an international, Mexico-based wholesale currency dealer and currency exchange business, controlling over 40 locations in Mexico [1]. The company pleaded guilty to operating an unlicensed money transmitting business in the United States and was cited for anti-money-laundering deficiencies [1] [6] [7]. GPOMCT used the U.S. financial system to process large amounts of currency, some of which were at high risk for being criminal proceeds, without proper registration or compliance with U.S. AML regulations [1]. Between 2019 and 2021, GPOMCT imported large volumes of U.S. dollars into the United States, including approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) delivered to a currency exchange in San Ysidro, California [1] [2] [4] [5]. The company was ordered to forfeit $1.1 million and sentenced to three years' probation [1]. There is also a mention of a civil proceeding in the Baja California Judicial Bulletin involving GPOMCT Grupo Empresarial related to a mortgaged property [9]. No specific sanctions listings or Politically Exposed Person (PEP) status were found in the provided web search results."
+      },
+      {
+        "heading": "Sources",
+        "body": "[1] | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11 | Criminal Proceeds: GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements\n[2] fdicoig.gov | https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[3] huggingface.co | https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22 | Aliases/Variants: GPOMCT Grupo Empresarial\n[4] | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[5] Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com | https://www.rrbdlaw.com/5975/securities-industry-commentator/ | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[6] Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&all_offense%5B%5D=Controlled+Substances+Act+violation&penalty_op=%3E&case_type=R&order=agency_code&sort=asc&page=17 | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n[7] Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&company=&reporting_date_parent_op=starts&reporting_date_parent=&penalty_op=%3E&penalty=&offense_group=financial+offenses&case_category=&govt_level=&agency_code_st%5B%5D=&pen_year%5B%5D=2025&pen_year%5B%5D=2024&pen_year%5B%5D=2023&pen_year%5B%5D=2022&pen_year%5B%5D=2021&pen_year%5B%5D=2020&pen_year%5B%5D=2019&pen_year%5B%5D=2018&pen_year%5B%5D=2017&pen_year%5B%5D=2016&pen_year%5B%5D=2015&pen_year%5B%5D=2014&pen_year%5B%5D=2013&pen_year%5B%5D=2012&pen_year%5B%5D=2011&pen_year%5B%5D=2010&pres_term=&case_type=&free_text=&hq_id=&state=&page=50&order=parent_name&sort=asc | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n[8] Wire transaction database\n[9] pjbc.gob.mx | https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf | Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property."
+      }
+    ],
+    "citations": [
+      {
+        "num": 1,
+        "title": "| https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11",
+        "url": null
+      },
+      {
+        "num": 2,
+        "title": "fdicoig.gov",
+        "url": "https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf",
+        "excerpt": "Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\")."
+      },
+      {
+        "num": 3,
+        "title": "huggingface.co",
+        "url": "https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22",
+        "excerpt": "Aliases/Variants: GPOMCT Grupo Empresarial"
+      },
+      {
+        "num": 4,
+        "title": "| https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united",
+        "url": null
+      },
+      {
+        "num": 5,
+        "title": "Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com",
+        "url": "https://www.rrbdlaw.com/5975/securities-industry-commentator/",
+        "excerpt": "Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\")."
+      },
+      {
+        "num": 6,
+        "title": "Violation Tracker",
+        "url": "https://violationtracker.goodjobsfirst.org/?company_op=starts&all_offense%5B%5D=Controlled+Substances+Act+violation&penalty_op=%3E&case_type=R&order=agency_code&sort=asc&page=17",
+        "excerpt": "Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies."
+      },
+      {
+        "num": 7,
+        "title": "Violation Tracker",
+        "url": "https://violationtracker.goodjobsfirst.org/?company_op=starts&company=&reporting_date_parent_op=starts&reporting_date_parent=&penalty_op=%3E&penalty=&offense_group=financial+offenses&case_category=&govt_level=&agency_code_st%5B%5D=&pen_year%5B%5D=2025&pen_year%5B%5D=2024&pen_year%5B%5D=2023&pen_year%5B%5D=2022&pen_year%5B%5D=2021&pen_year%5B%5D=2020&pen_year%5B%5D=2019&pen_year%5B%5D=2018&pen_year%5B%5D=2017&pen_year%5B%5D=2016&pen_year%5B%5D=2015&pen_year%5B%5D=2014&pen_year%5B%5D=2013&pen_year%5B%5D=2012&pen_year%5B%5D=2011&pen_year%5B%5D=2010&pres_term=&case_type=&free_text=&hq_id=&state=&page=50&order=parent_name&sort=asc",
+        "excerpt": "Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies."
+      },
+      {
+        "num": 8,
+        "title": "Wire transaction database"
+      },
+      {
+        "num": 9,
+        "title": "pjbc.gob.mx",
+        "url": "https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf",
+        "excerpt": "Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property."
+      }
+    ]
+  },
+  "token_usage": {
+    "total_llm_calls": 5,
+    "prompt_token_count": 24680,
+    "candidates_token_count": 2087,
+    "thoughts_token_count": 816,
+    "total_token_count": 27583
+  },
+  "llm_call_history": {
+    "system_instruction": "You are an Anti-Money Laundering (AML) Investigation Agent at a financial institution.\nYour job is to conduct comprehensive due diligence on a named subject by:\n1. Searching the internal knowledge base (sanctions lists, most wanted lists)\n2. Querying the transaction database for any related wire transfers\n3. Performing external web searches for adverse media and public records\n\n## Available Tools\n\nYou have access to:\n- **get_schema_info**: Get the database schema (tables, columns, types).\n- **execute**: Execute read-only SQL queries against the transaction database.\n- **search_knowledgebase**: Search the internal watchlist/sanctions knowledge base by name, alias, or keyword.\n- **get_entity_by_id**: Look up a specific entity by ID from the knowledge base.\n- **web_search**: Perform external web search for due diligence (biographical info, financial crime exposure, adverse media, PEP status, corporate ownership).\n\n## Investigation Workflow\n\n### Step 0: Understand the Investigation Request\nThe input may be a simple name, or it may be a long free-form text (an email, a referral note, a customer record).\nBefore doing anything else:\n- **Extract the investigation subject**: identify the primary person or entity to investigate. This is what you will use as the search term and as the report title.\n- **Identify any supplementary context**: aliases, date of birth, nationality, employer, address, account numbers, or other details that can help disambiguate the subject in later steps.\n- **Determine the clean display name**: the shortest unambiguous name to use in the report title (e.g. \"Daniel He (He Yi)\" not the full raw input).\n\nIf the input is ambiguous or contains multiple potential subjects, investigate the most prominent one and note the others.\n\n### Step 1: Internal Knowledge Base Search\n- Search the watchlist/sanctions database using the extracted subject name.\n- If the first search returns no results, try up to 2 more searches with progressively simpler or alternative queries:\n  - Attempt 1: full extracted name (e.g. `Daniel He He Yi`)\n  - Attempt 2: last name only or primary alias (e.g. `He Yi`)\n  - Attempt 3: a key identifier from the context (e.g. company name, known alias)\n- Stop as soon as a meaningful result is returned; do not run all 3 if the first succeeds.\n- Record all hits with entity IDs and source names.\n\n### Step 2: Transaction Database Analysis\n- First use get_schema_info to understand the database structure\n- Search for the subject in sender_name, receiver_name, and memo fields\n- Use SQL LIKE with wildcards for fuzzy matching (e.g., WHERE sender_name LIKE '%LAST_NAME%')\n- Analyze transaction patterns: amounts, frequencies, counterparties\n- Look for suspicious patterns: structuring, rapid movement, unusual jurisdictions\n\n### Step 3: External Web Search (REQUIRED — always run this step)\n- **Construct a targeted search query** using what you already know from Step 1:\n  - If the KB found a match: include the most disambiguating details in the query — such as known aliases, date of birth, nationality, or the sanctions program (e.g. `\"Daniel He\" \"He Yi\" OFAC SDN 1965 China`). This reduces the risk of retrieving results for a different person with a common name.\n  - If the KB found no match: the subject's name may be common — add any contextual clues available (e.g. jurisdiction, employer, industry) to narrow results.\n  - If the KB found no match and the name is generic, note that results may not relate to the subject.\n- Call the **web_search** tool with this enriched query string.\n- Look for: adverse media, criminal records, PEP status, corporate connections\n- Extract specific source titles and URLs for citations\n- Even if KB and SQL steps found nothing, web_search may still surface adverse media\n- **If the result contains [SEARCH_INCONCLUSIVE]**: the search engine could not confidently\n  identify the subject — this is a search limitation, NOT confirmation the subject is clean.\n  Write \"External web search was inconclusive — the subject's name could not be uniquely\n  resolved by the search engine. Manual review is recommended.\" Do NOT write \"no adverse\n  media found\" or \"no results found\".\n\n### Step 4: Compile Report with Citations\n\n## Citation Format (CRITICAL)\n\nYou MUST follow this exact citation format in your report:\n\nFor internal KB hits, use:\n[N] Internal knowledge base / watchlist: <Source Name>, entity_id: <ID>\n\nFor web search results, use ONE numbered entry PER webpage (never aggregate multiple pages into one citation).\nUse pipe separators between title, URL, and excerpt:\n[N] <Webpage Title> | <Direct URL> | <Concise relevant excerpt>\n\nFor transaction database findings, use a SINGLE citation entry for all SQL queries combined — do NOT create one entry per query:\n[N] Wire transaction database\n\n**Inline citation rules:**\n- Each citation marker must be separate: write [1] [2] NOT [1,2] or [1, 2]\n- Never combine multiple citations into a single bracket like [2,3] — always split them\n- Each webpage from the web_search tool MUST be its own separate numbered source entry\n- Use the exact URLs provided in the Grounding Sources section of the web_search result\n- **Cite specifically, not in bulk**: only attach a citation number to a claim if that specific source directly supports that specific claim. Do NOT append a long list of citation numbers to a single general sentence (e.g. \"no adverse media found [2][3][4][5][6][7][8][9][10]\") — this is misleading. If a source confirms the absence of a finding, only cite it if it explicitly discusses the subject and the relevant risk category. If multiple sources are about unrelated topics (e.g. a LinkedIn profile, a conference page, a news article about a different person), do NOT lump them all after one sweeping statement.\n- **Negative findings**: for \"no adverse media found\" or similar conclusions, cite only sources that searched for but did not find adverse information about the subject (e.g. a news article about a person by that name that turns out to be a different individual should not be cited as evidence of no crime). If no sources specifically address a risk category, state the conclusion without any citation number.\n\n**Web search citation rules (CRITICAL):**\n- The web_search tool returns two parts: (1) a narrative analysis summary, and (2) a \"CITABLE SOURCES\" block below a `---` separator. ONLY the bullet-point entries in the CITABLE SOURCES block are valid web citations — do NOT create a numbered citation for the narrative summary text itself (the narrative has no URL and must never appear as a source entry).\n- Each citable source line has the format `Title | URL | excerpt`. Copy the title, URL, and excerpt into your numbered citation.\n- Include every citable source that supports a claim in your report. Omit a source only if none of its information appears anywhere in the report.\n- Do NOT invent citation entries with URL \"N/A\" or without a real URL — if a finding has no citable source, reference it inline without a citation number.\n\nExample:\n\"John Doe has hits in OFAC [1] and US FBI Most Wanted [2]. Money laundering coverage was found [3] [4].\"\n\nSources:\n[1] Internal knowledge base / watchlist: OFAC Sanctions, entity_id: NK-abc123\n[2] Internal knowledge base / watchlist: FBI Most Wanted, entity_id: NK-def456\n[3] Reuters: John Doe charged with money laundering | https://reuters.com/article/... | John Doe was charged in 2024\n[4] BBC News: John Doe fraud investigation. https://bbc.co.uk/news/... (Authorities have opened a probe...)\n\n## Output Format\n\nYour **entire response must begin with the `# AML Investigation Report:` heading** — do not write any preamble, thinking summary, personal commentary, or intermediate observations before it. Produce only the formal report.\n\nUse the **clean display name** you extracted in Step 0 as the report title — not the full raw input text.\n\nStructure your final output as follows:\n\n# AML Investigation Report: <Clean Subject Name>\n\n## Risk Assessment: <HIGH|MEDIUM|LOW|CLEAR>\n\n## Summary\n<Executive summary with inline citation markers [1], [2], etc.>\n\n## Internal Knowledge Base Findings\n<Details of any watchlist/sanctions matches>\n\n## Wire Transactions\n<Brief high-level summary only: total transaction count, flagged amounts, and overall risk pattern. Keep to 2-4 sentences. Individual transaction rows are shown in an interactive data table — do NOT list or repeat individual rows in this narrative section.>\n\n## External Search Findings\n<Adverse media, public records, PEP status findings>\n\n## Sources\n<Numbered citation list following the format above>\n\n## Core Principles\n- Start with the hypothesis that the subject is legitimate unless evidence contradicts this\n- Multiple indicators from different categories are needed to flag as HIGH risk\n- Base conclusions on observable evidence, not speculation\n- Always provide source citations for every factual claim\n- Extract and use direct URLs (not redirect links) for web sources\n- **Use gender-neutral language** (e.g. \"the subject\", \"they\", \"their\") unless the subject's gender is explicitly stated in the investigation request (e.g. in a referral email). Never infer gender from a name alone.\n\n## Query Strategy for Transaction Database\n- Start with aggregates (COUNT, SUM, DISTINCT counterparties) before pulling raw data\n- Use LIKE patterns for name matching: WHERE sender_name LIKE '%NAME%'\n- Search across sender_name, receiver_name, and memo fields\n- Limit results to avoid overwhelming output\n- Follow interesting leads with targeted follow-up queries\n\n\nYou are an agent. Your internal name is \"AmlInvestigationAgent\". The description about you is \"Conducts AML investigations using transaction analysis, watchlist screening, and web search.\".",
+    "calls": [
+      {
+        "call_index": 0,
+        "timestamp": "2026-03-24T18:13:00.404816+00:00",
+        "request": {
+          "model": "gemini-2.5-flash",
+          "new_contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "type": "text",
+                  "text": "Investigate the following subject for AML compliance:\n\nGpomct Grupo Empresarial"
+                }
+              ]
+            }
+          ],
+          "total_contents_count": 1
+        },
+        "response": {
+          "content": {
+            "role": "model",
+            "parts": [
+              {
+                "type": "text",
+                "text": "**AML Investigation Initiation: Gpomct Grupo Empresarial**\n\nOkay, here's what I'm thinking. We've got a new AML investigation request centered around \"Gpomct Grupo Empresarial\". My process is pretty straightforward: stick to the investigation workflow and gather as much information as possible.\n\nFirst, I need to get crystal clear on the request. The subject is \"Gpomct Grupo Empresarial,\" and there's no additional contextual information. Fine, that’s our starting point.\n\nNow, let's dive into the core investigation. Step one: Internal Knowledge Base Search. I need to see if we have anything on file already. I'll kick off Attempt 1 immediately by searching for \"Gpomct Grupo Empresarial\" directly within the internal knowledge base. Fingers crossed that we might have some pre-existing information!\n\nIf that comes up empty, I'll move quickly to the transaction database analysis. I'll need to know the database schema and then run a comprehensive search. I'll look for \"Gpomct Grupo Empresarial\" in the `sender_name`, `receiver_name`, and `memo` fields, using the `LIKE` operator to ensure I'm catching all possible matches and variations.\n\nNext, I'll hit the web. Given no internal KB hits, I'll construct a targeted search query using the company name \"Gpomct Grupo Empresarial.\" The external web search is crucial, in the absence of internal knowledge.\n\nFinally, I'll compile my findings into a report, synthesizing the internal and external results. The goal is a clear, concise, and informative document that lays out the details of our initial findings.\n",
+                "thought": true
+              },
+              {
+                "type": "function_call",
+                "name": "search_knowledgebase",
+                "id": null,
+                "args": {
+                  "keyword": "Gpomct Grupo Empresarial"
+                }
+              }
+            ]
+          },
+          "finish_reason": "FinishReason.STOP"
+        },
+        "usage": {
+          "prompt_token_count": 2856,
+          "candidates_token_count": 21,
+          "total_token_count": 3069,
+          "thoughts_token_count": 192,
+          "cached_content_token_count": null
+        }
+      },
+      {
+        "call_index": 1,
+        "timestamp": "2026-03-24T18:13:05.500432+00:00",
+        "request": {
+          "model": "gemini-2.5-flash",
+          "new_contents": [
+            {
+              "role": "model",
+              "parts": [
+                {
+                  "type": "text",
+                  "text": "**AML Investigation Initiation: Gpomct Grupo Empresarial**\n\nOkay, here's what I'm thinking. We've got a new AML investigation request centered around \"Gpomct Grupo Empresarial\". My process is pretty straightforward: stick to the investigation workflow and gather as much information as possible.\n\nFirst, I need to get crystal clear on the request. The subject is \"Gpomct Grupo Empresarial,\" and there's no additional contextual information. Fine, that’s our starting point.\n\nNow, let's dive into the core investigation. Step one: Internal Knowledge Base Search. I need to see if we have anything on file already. I'll kick off Attempt 1 immediately by searching for \"Gpomct Grupo Empresarial\" directly within the internal knowledge base. Fingers crossed that we might have some pre-existing information!\n\nIf that comes up empty, I'll move quickly to the transaction database analysis. I'll need to know the database schema and then run a comprehensive search. I'll look for \"Gpomct Grupo Empresarial\" in the `sender_name`, `receiver_name`, and `memo` fields, using the `LIKE` operator to ensure I'm catching all possible matches and variations.\n\nNext, I'll hit the web. Given no internal KB hits, I'll construct a targeted search query using the company name \"Gpomct Grupo Empresarial.\" The external web search is crucial, in the absence of internal knowledge.\n\nFinally, I'll compile my findings into a report, synthesizing the internal and external results. The goal is a clear, concise, and informative document that lays out the details of our initial findings.\n",
+                  "thought": true
+                },
+                {
+                  "type": "function_call",
+                  "name": "search_knowledgebase",
+                  "id": null,
+                  "args": {
+                    "keyword": "Gpomct Grupo Empresarial"
+                  }
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "type": "function_response",
+                  "name": "search_knowledgebase",
+                  "id": null,
+                  "result": "Knowledge Base Search Results for 'Gpomct Grupo Empresarial':\n\nResult 1:\n  Entity ID: NK-ng7ZJVuZRb7CN4iU8KR5Gg\n  Name: Leading Production and Technical Enterprise Granit\n  Source: US OFAC Specially Designated Nationals (SDN)\n  Score: 0.3580\n  Snippet: US OFAC Specially Designated Nationals (SDN)\nName: Leading Production and Technical Enterprise Granit\nType: Organization\nIncorporation Date: 2002-10-18\nRegistration Number: 1027731005323\nTax Number: 7731263174\nSource URL: https://sanctionssearch.ofac.treas.gov/Details.aspx?id=43070\nAlias: Almaz-Antey GPTP Granite / JSC GPTP Granit / Aktsionernoe Oschevstvo Golovnoe Proizvodstvenno-Tehnicheskoe Predpriyatie Granit / JSC Head Technological Enterprise Granit\nAddress: 7 Molodogvardeyskaya Str., 1214\n\nResult 2:\n  Entity ID: NK-YdM8WkEt5eBLiKD663j8or\n  Name: Petrovsky Electromechanical Plant Molot JSC\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3364\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: Petrovsky Electromechanical Plant Molot JSC\nType: LegalEntity\nAlias: Акционерное Общество \"Петровский Электромеханический Завод \"Молот\" and ПЭМЗ \"Молот\" / АО\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n\nResult 3:\n  Entity ID: NK-n3U6g7iQhybo648xwo9w9C\n  Name: MG-Flot LLC\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3228\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: MG-Flot LLC\nType: LegalEntity\nAlias: Transseaport / TransMorFlot / TransMorFlot Shipping Company\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n\nResult 4:\n  Entity ID: NK-PUoiZTPDehyJijQsNWX45v\n  Name: Tactical Missiles Corporation, GosNIIMash JSC\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3216\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: Tactical Missiles Corporation, GosNIIMash JSC\nType: LegalEntity\nAlias: Scientific Research Institute for Mechanical Engineering GosNIIMash JSC\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n\nResult 5:\n  Entity ID: NK-ng7ZJVuZRb7CN4iU8KR5Gg\n  Name: Leading Production and Technical Enterprise Granit\n  Source: Canadian Consolidated Autonomous Sanctions\n  Score: 0.3180\n  Snippet: Canadian Consolidated Autonomous Sanctions\nName: Leading Production and Technical Enterprise Granit\nType: LegalEntity\nAlias: Акционерное общество «Головное производственнотехническое предприятие «Гранит»\nCountry: RU\nProgram: CA-SEMA\nFirst seen: 2024-08-06T09:43:02\nLast update: 2025-05-19T18:43:02\n"
+                }
+              ]
+            }
+          ],
+          "total_contents_count": 3
+        },
+        "response": {
+          "content": {
+            "role": "model",
+            "parts": [
+              {
+                "type": "text",
+                "text": "**Initial Assessment and Next Steps**\n\nOkay, so I just ran a search in the internal knowledge base for \"Gpomct Grupo Empresarial.\" The results are weak, scoring around 0.3. They seem to point to Russian entities, which is odd since \"Grupo Empresarial\" implies a Spanish or Portuguese-speaking context. I'm suspecting these are false positives, picking up on similar-sounding words like \"Granit,\" but the snippets themselves don't actually contain the target name.\n\nTherefore, I'm going to assume there's no direct match in the internal knowledge base for \"Gpomct Grupo Empresarial\" at this point. I'll keep those low-scoring results in the back of my mind, just in case something from the web search clarifies things.\n\nMy next step is clearly Step 2: Transaction Database Analysis. Before I dive into that, I need to grab the schema. Let's get that data sorted and move forward.\n",
+                "thought": true
+              },
+              {
+                "type": "function_call",
+                "name": "get_schema_info",
+                "id": null,
+                "args": {}
+              }
+            ]
+          },
+          "finish_reason": "FinishReason.STOP"
+        },
+        "usage": {
+          "prompt_token_count": 4236,
+          "candidates_token_count": 12,
+          "total_token_count": 4437,
+          "thoughts_token_count": 189,
+          "cached_content_token_count": null
+        }
+      },
+      {
+        "call_index": 2,
+        "timestamp": "2026-03-24T18:13:08.375077+00:00",
+        "request": {
+          "model": "gemini-2.5-flash",
+          "new_contents": [
+            {
+              "role": "model",
+              "parts": [
+                {
+                  "type": "text",
+                  "text": "**Initial Assessment and Next Steps**\n\nOkay, so I just ran a search in the internal knowledge base for \"Gpomct Grupo Empresarial.\" The results are weak, scoring around 0.3. They seem to point to Russian entities, which is odd since \"Grupo Empresarial\" implies a Spanish or Portuguese-speaking context. I'm suspecting these are false positives, picking up on similar-sounding words like \"Granit,\" but the snippets themselves don't actually contain the target name.\n\nTherefore, I'm going to assume there's no direct match in the internal knowledge base for \"Gpomct Grupo Empresarial\" at this point. I'll keep those low-scoring results in the back of my mind, just in case something from the web search clarifies things.\n\nMy next step is clearly Step 2: Transaction Database Analysis. Before I dive into that, I need to grab the schema. Let's get that data sorted and move forward.\n",
+                  "thought": true
+                },
+                {
+                  "type": "function_call",
+                  "name": "get_schema_info",
+                  "id": null,
+                  "args": {}
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "type": "function_response",
+                  "name": "get_schema_info",
+                  "id": null,
+                  "result": "Table: transactions\n  Columns: transaction_id: TEXT, amount: REAL, currency: TEXT, transaction_datetime: TEXT, sender_name: TEXT, sender_address: TEXT, receiver_name: TEXT, receiver_address: TEXT, memo: TEXT"
+                }
+              ]
+            }
+          ],
+          "total_contents_count": 5
+        },
+        "response": {
+          "content": {
+            "role": "model",
+            "parts": [
+              {
+                "type": "text",
+                "text": "Okay, here's my summary, framed as my thought process:\n\n**Transaction Data Analysis - Focusing on \"Gpomct Grupo Empresarial\"**\n\nAlright, with the `transactions` table schema in hand, my immediate focus is on identifying any entries related to \"Gpomct Grupo Empresarial.\" I'll need to query the `sender_name`, `receiver_name`, and `memo` fields, of course. For this, I'm going to leverage `LIKE` with wildcards—specifically, `LIKE '%Gpomct Grupo Empresarial%'`. Fuzzy matching is definitely the way to go here; I don't want to miss any variations or potential typos in the company name. Besides just identifying the transactions, I'm going to get the total count, along with the sum of the amounts involved. That will give me a very useful initial overview of their activity within the dataset, immediately quantifiable.\n",
+                "thought": true
+              },
+              {
+                "type": "function_call",
+                "name": "execute",
+                "id": null,
+                "args": {
+                  "query": "SELECT COUNT(*) FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%'"
+                }
+              },
+              {
+                "type": "function_call",
+                "name": "execute",
+                "id": null,
+                "args": {
+                  "query": "SELECT SUM(amount) FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%'"
+                }
+              },
+              {
+                "type": "function_call",
+                "name": "execute",
+                "id": null,
+                "args": {
+                  "query": "SELECT * FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%' LIMIT 10"
+                }
+              }
+            ]
+          },
+          "finish_reason": "FinishReason.STOP"
+        },
+        "usage": {
+          "prompt_token_count": 4521,
+          "candidates_token_count": 185,
+          "total_token_count": 4784,
+          "thoughts_token_count": 78,
+          "cached_content_token_count": null
+        }
+      },
+      {
+        "call_index": 3,
+        "timestamp": "2026-03-24T18:13:11.284505+00:00",
+        "request": {
+          "model": "gemini-2.5-flash",
+          "new_contents": [
+            {
+              "role": "model",
+              "parts": [
+                {
+                  "type": "text",
+                  "text": "Okay, here's my summary, framed as my thought process:\n\n**Transaction Data Analysis - Focusing on \"Gpomct Grupo Empresarial\"**\n\nAlright, with the `transactions` table schema in hand, my immediate focus is on identifying any entries related to \"Gpomct Grupo Empresarial.\" I'll need to query the `sender_name`, `receiver_name`, and `memo` fields, of course. For this, I'm going to leverage `LIKE` with wildcards—specifically, `LIKE '%Gpomct Grupo Empresarial%'`. Fuzzy matching is definitely the way to go here; I don't want to miss any variations or potential typos in the company name. Besides just identifying the transactions, I'm going to get the total count, along with the sum of the amounts involved. That will give me a very useful initial overview of their activity within the dataset, immediately quantifiable.\n",
+                  "thought": true
+                },
+                {
+                  "type": "function_call",
+                  "name": "execute",
+                  "id": null,
+                  "args": {
+                    "query": "SELECT COUNT(*) FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%'"
+                  }
+                },
+                {
+                  "type": "function_call",
+                  "name": "execute",
+                  "id": null,
+                  "args": {
+                    "query": "SELECT SUM(amount) FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%'"
+                  }
+                },
+                {
+                  "type": "function_call",
+                  "name": "execute",
+                  "id": null,
+                  "args": {
+                    "query": "SELECT * FROM transactions WHERE sender_name LIKE '%Gpomct Grupo Empresarial%' OR receiver_name LIKE '%Gpomct Grupo Empresarial%' OR memo LIKE '%Gpomct Grupo Empresarial%' LIMIT 10"
+                  }
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "type": "function_response",
+                  "name": "execute",
+                  "id": null,
+                  "result": "| COUNT(*) |\n| --- |\n| 2 |"
+                },
+                {
+                  "type": "function_response",
+                  "name": "execute",
+                  "id": null,
+                  "result": "| SUM(amount) |\n| --- |\n| 781572.79 |"
+                },
+                {
+                  "type": "function_response",
+                  "name": "execute",
+                  "id": null,
+                  "result": "| transaction_id | amount | currency | transaction_datetime | sender_name | sender_address | receiver_name | receiver_address | memo |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 81ce4a88-dbb0-4029-adf9-6982b2850cbb | 289252.85 | USD | 2025-05-13T17:55:48 | AMANDA CAMACHO | 4431 AMANDA POINTS, WEST SOPHIAVILLE, AB R6G3A1 | GPOMCT GRUPO EMPRESARIAL | 6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2 | Loan repayment UNSX1VSW |\n| 3e7dfa3f-d7c9-428f-8027-63b715241e59 | 492319.94 | CAD | 2025-11-04T18:47:36 | RONALD CONLEY | 3825 BOYD POINT APT. 705, NORTH ELAINE, NL C3J 8T9 | GPOMCT GRUPO EMPRESARIAL | 6616 MICHELLE HARBOR, MATTHEWPORT, ON A7E 1T2 | Trade settlement K9TKK1YI |"
+                }
+              ]
+            }
+          ],
+          "total_contents_count": 7
+        },
+        "response": {
+          "content": {
+            "role": "model",
+            "parts": [
+              {
+                "type": "text",
+                "text": "**Initial Assessment & Next Steps**\n\nOkay, so the transaction data gives us a starting point. I see two substantial transactions, totaling just under $800k, flowing *into* \"GPOMCT GRUPO EMPRESARIAL\" from \"AMANDA CAMACHO\" and \"RONALD CONLEY.\" The memos, \"Loan repayment UNSX1VSW\" and \"Trade settlement K9TKK1YI,\" provide useful context. While not conclusive, this strongly suggests financial activity and potentially business dealings. Loan repayments are fairly straightforward. Trade settlement could mean different things, potentially related to goods, services, or investments. Now that I have a basic understanding of the transactions, I'll move on to Step 3, which means it's time to build a robust external web search query using the entity's name. This should help to flesh out the picture of \"GPOMCT GRUPO EMPRESARIAL\".\n",
+                "thought": true
+              },
+              {
+                "type": "function_call",
+                "name": "web_search",
+                "id": null,
+                "args": {
+                  "query": "\"Gpomct Grupo Empresarial\" adverse media financial crime sanctions PEP corporate connections"
+                }
+              }
+            ]
+          },
+          "finish_reason": "FinishReason.STOP"
+        },
+        "usage": {
+          "prompt_token_count": 5306,
+          "candidates_token_count": 29,
+          "total_token_count": 5450,
+          "thoughts_token_count": 115,
+          "cached_content_token_count": null
+        }
+      },
+      {
+        "call_index": 4,
+        "timestamp": "2026-03-24T18:13:38.109623+00:00",
+        "request": {
+          "model": "gemini-2.5-flash",
+          "new_contents": [
+            {
+              "role": "model",
+              "parts": [
+                {
+                  "type": "text",
+                  "text": "**Initial Assessment & Next Steps**\n\nOkay, so the transaction data gives us a starting point. I see two substantial transactions, totaling just under $800k, flowing *into* \"GPOMCT GRUPO EMPRESARIAL\" from \"AMANDA CAMACHO\" and \"RONALD CONLEY.\" The memos, \"Loan repayment UNSX1VSW\" and \"Trade settlement K9TKK1YI,\" provide useful context. While not conclusive, this strongly suggests financial activity and potentially business dealings. Loan repayments are fairly straightforward. Trade settlement could mean different things, potentially related to goods, services, or investments. Now that I have a basic understanding of the transactions, I'll move on to Step 3, which means it's time to build a robust external web search query using the entity's name. This should help to flesh out the picture of \"GPOMCT GRUPO EMPRESARIAL\".\n",
+                  "thought": true
+                },
+                {
+                  "type": "function_call",
+                  "name": "web_search",
+                  "id": null,
+                  "args": {
+                    "query": "\"Gpomct Grupo Empresarial\" adverse media financial crime sanctions PEP corporate connections"
+                  }
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "type": "function_response",
+                  "name": "web_search",
+                  "id": null,
+                  "result": "The following is an enhanced due diligence report on GPOMCT Grupo Empresarial S.A. de C.V.:\n\n## 1. Detailed Biographical Information\n\n*   **Full Legal Name:** GPOMCT Grupo Empresarial S.A. de C.V.\n*   **Aliases/Variants:** GPOMCT Grupo Empresarial\n*   **Date and Place of Birth:** Not publicly available.\n*   **Nationality/Citizenship:** Mexican (inferred from being a Mexico-based business)\n*   **Passport/ID Numbers:** Not publicly available.\n*   **Last Known Addresses/Countries of Residence:** Mexico\n*   **Professional Background:** Operates as an international, Mexico-based wholesale currency dealer and currency exchange business. Controls over 40 locations in Mexico.\n\n## 2. Financial Crime Exposure\n\n*   **Allegations/Investigations/Convictions:**\n    *   **Unlicensed Money Transmitting Business:** GPOMCT pleaded guilty to operating an unlicensed money transmitting business in the United States.\n    *   **Anti-Money Laundering Deficiencies:** The company was cited for anti-money-laundering deficiencies.\n    *   **Criminal Proceeds:** GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements.\n*   **Specific Activities:**\n    *   Imported large volumes of U.S. dollars into the United States between 2019 and 2021.\n    *   Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n    *   Used an armored car company to collect currency from MSB 1 as payment and deliver it to a third-party intermediary in Miami, Florida.\n*   **Regulatory Fines/Enforcement Actions:**\n    *   **Forfeiture:** Ordered to forfeit $1.1 million for operating an unlicensed money transmitting business.\n    *   **Probation:** Sentenced to three years' probation.\n    *   **Guilty Plea:** Pleaded guilty to unlawfully operating in the United States.\n\n## 3. Corporate Ownership and Business Interests\n\n*   **Subsidiaries:** Operates through subsidiaries, controlling more than 40 locations in Mexico.\n*   **Business Interests:** Wholesale currency dealer and currency exchange business.\n*   **Jurisdictional Links:** Primarily operates in Mexico, with significant transactions involving the U.S. financial system.\n\n## 4. Regulatory and Person-of-Interest Status\n\n*   **Sanctions Listings:** No specific sanctions listings were found in the provided search results.\n*   **Politically Exposed Person (PEP) Status:** No information found.\n*   **Law Enforcement Interest:**\n    *   Investigated by Homeland Security Investigations (HSI), Federal Deposit Insurance Corporation Office of Inspector General (FDIC OIG), U.S. Customs and Border Protection, and San Diego County Sheriff's Department.\n    *   Pled guilty in the United States District Court for the Southern District of California.\n    *   Sentenced in federal court.\n\n## 5. Related Parties\n\n*   **Immediate Family Members:** No information found.\n*   **Business Partners/Associates:**\n    *   MSB 1: A currency exchange located in San Ysidro, California, that received currency shipments from GPOMCT.\n    *   Armored Car Company: Utilized by GPOMCT for currency transport.\n    *   Third-party intermediary in Miami, Florida: Received currency from the armored car company.\n\n## 6. Negative News and Adverse Media\n\n*   **Controversies/Scandals:** The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n*   **Reputational Incidents:** The guilty plea and sentencing for financial crime significantly impacts its reputation.\n*   **Litigation/Proceedings:**\n    *   A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property. The exact nature of GPOMCT's involvement (plaintiff/defendant) and the status of this case are not fully clear from the snippet.\n\n---\nCITABLE SOURCES (use ONLY these as web citations — do NOT cite the narrative above):\n- &nbsp; | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11 | Criminal Proceeds: GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements\n- fdicoig.gov | https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n- huggingface.co | https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22 | Aliases/Variants: GPOMCT Grupo Empresarial\n- &nbsp; | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n- Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com | https://www.rrbdlaw.com/5975/securities-industry-commentator/ | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \"MSB 1\").\n- Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&all_offense%5B%5D=Controlled+Substances+Act+violation&penalty_op=%3E&case_type=R&order=agency_code&sort=asc&page=17 | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n- Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&company=&reporting_date_parent_op=starts&reporting_date_parent=&penalty_op=%3E&penalty=&offense_group=financial+offenses&case_category=&govt_level=&agency_code_st%5B%5D=&pen_year%5B%5D=2025&pen_year%5B%5D=2024&pen_year%5B%5D=2023&pen_year%5B%5D=2022&pen_year%5B%5D=2021&pen_year%5B%5D=2020&pen_year%5B%5D=2019&pen_year%5B%5D=2018&pen_year%5B%5D=2017&pen_year%5B%5D=2016&pen_year%5B%5D=2015&pen_year%5B%5D=2014&pen_year%5B%5D=2013&pen_year%5B%5D=2012&pen_year%5B%5D=2011&pen_year%5B%5D=2010&pres_term=&case_type=&free_text=&hq_id=&state=&page=50&order=parent_name&sort=asc | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n- pjbc.gob.mx | https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf | Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property.\n"
+                }
+              ]
+            }
+          ],
+          "total_contents_count": 9
+        },
+        "response": {
+          "content": {
+            "role": "model",
+            "parts": [
+              {
+                "type": "text",
+                "text": "**Risk Assessment: GPOMCT Grupo Empresarial S.A. de C.V.**\n\nOkay, let's break this down. My web search on \"Gpomct Grupo Empresarial S.A. de C.V.\" immediately threw up a red flag. Significant adverse media popped, and it's not good. They pleaded guilty to running an unlicensed money transmitting business in the US – that's a serious violation. They were also cited for anti-money laundering deficiencies, and they forfeited $1.1 million. The search also highlighted their wholesale currency and exchange operations in Mexico, with a clear link to the US financial system, which is relevant given the previous finding.\n\nNow, let's cross-reference this with my internal data. My knowledge base isn't turning up any direct matches, just some weak fuzzy ones that are not worth consideration given the web search. Next, I checked the transaction database. There are two incoming transactions totaling $781,572.79, tagged as \"Loan repayment\" and \"Trade settlement,\" respectively. The important thing is that these transactions occurred *after* the period the negative media covers (2019-2021).\n\nPutting it all together, the web search is the deciding factor. The adverse media is too significant to ignore. Given the financial crime history – unlicensed money transmitting, AML deficiencies – I'm setting the risk assessment to **HIGH**. Time to compile that report.\n",
+                "thought": true
+              },
+              {
+                "type": "text",
+                "text": "# AML Investigation Report: Gpomct Grupo Empresarial\n\n## Risk Assessment: HIGH\n\n## Summary\nGPOMCT Grupo Empresarial S.A. de C.V. (referred to as \"GPOMCT\") has been identified as a Mexican wholesale currency dealer and currency exchange business that pleaded guilty in the United States to operating an unlicensed money transmitting business and was cited for anti-money laundering deficiencies [1] [2] [6] [7]. The company was ordered to forfeit $1.1 million and sentenced to three years' probation for using the U.S. financial system to process large amounts of currency at high risk for including criminal proceeds [1]. Investigations were conducted by Homeland Security Investigations (HSI), Federal Deposit Insurance Corporation Office of Inspector General (FDIC OIG), U.S. Customs and Border Protection, and San Diego County Sheriff's Department [1]. The entity has 2 incoming wire transactions totaling 781572.79 [8].\n\n## Internal Knowledge Base Findings\nA search of the internal knowledge base for \"Gpomct Grupo Empresarial\" did not yield any direct matches. Several low-scoring, fuzzy matches for unrelated Russian entities were found but are not considered relevant to this subject.\n\n## Wire Transactions\nThe transaction database shows 2 incoming wire transfers to GPOMCT Grupo Empresarial, totaling 781572.79 USD. These transactions occurred after the period of the alleged unlicensed operations (2019-2021). The transactions are described as a \"Loan repayment\" for 289252.85 USD and a \"Trade settlement\" for 492319.94 CAD, both originating from individuals [8].\n\n## External Search Findings\nGPOMCT Grupo Empresarial S.A. de C.V. operates as an international, Mexico-based wholesale currency dealer and currency exchange business, controlling over 40 locations in Mexico [1]. The company pleaded guilty to operating an unlicensed money transmitting business in the United States and was cited for anti-money-laundering deficiencies [1] [6] [7]. GPOMCT used the U.S. financial system to process large amounts of currency, some of which were at high risk for being criminal proceeds, without proper registration or compliance with U.S. AML regulations [1]. Between 2019 and 2021, GPOMCT imported large volumes of U.S. dollars into the United States, including approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) delivered to a currency exchange in San Ysidro, California [1] [2] [4] [5]. The company was ordered to forfeit $1.1 million and sentenced to three years' probation [1]. There is also a mention of a civil proceeding in the Baja California Judicial Bulletin involving GPOMCT Grupo Empresarial related to a mortgaged property [9]. No specific sanctions listings or Politically Exposed Person (PEP) status were found in the provided web search results.\n\n## Sources\n[1] | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-sentenced-criminal-operations-forfeits-11 | Criminal Proceeds: GPOMCT used the U.S. financial system to process large amounts of currency that were at high risk for including criminal proceeds, without registering as a financial institution or complying with U.S. anti-money laundering regulations and reporting requirements\n[2] fdicoig.gov | https://www.fdicoig.gov/sites/default/files/reports/2022-11/OIG_Semiannual_Report_0421-0921%20%281%29%20%281%29.pdf | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[3] huggingface.co | https://huggingface.co/api/resolve-cache/datasets/xhstdong/agent_eval/5943bc515f585bac2da65ae8781b4b3f08ebae09/kyc_entities_hf.csv?download=true&etag=%22cc006f486d37176ea900171f2c7dc291a85fdbb4%22 | Aliases/Variants: GPOMCT Grupo Empresarial\n[4] | https://www.justice.gov/usao-sdca/pr/international-wholesale-currency-dealer-pleads-guilty-unlawfully-operating-united | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[5] Securities Industry Commentator by Bill Singer Esq - BrokeAndBroker.com | https://www.rrbdlaw.com/5975/securities-industry-commentator/ | Imported approximately 195 shipments of currency (each worth between $90,000 and $100,000 USD) between September 2019 and September 2020, delivering them to a currency exchange in San Ysidro, California (identified as \\\"MSB 1\\\").\n[6] Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&all_offense%5B%5D=Controlled+Substances+Act+violation&penalty_op=%3E&case_type=R&order=agency_code&sort=asc&page=17 | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n[7] Violation Tracker | https://violationtracker.goodjobsfirst.org/?company_op=starts&company=&reporting_date_parent_op=starts&reporting_date_parent=&penalty_op=%3E&penalty=&offense_group=financial+offenses&case_category=&govt_level=&agency_code_st%5B%5D=&pen_year%5B%5D=2025&pen_year%5B%5D=2024&pen_year%5B%5D=2023&pen_year%5B%5D=2022&pen_year%5B%5D=2021&pen_year%5B%5D=2020&pen_year%5B%5D=2019&pen_year%5B%5D=2018&pen_year%5B%5D=2017&pen_year%5B%5D=2016&pen_year%5B%5D=2015&pen_year%5B%5D=2014&pen_year%5B%5D=2013&pen_year%5B%5D=2012&pen_year%5B%5D=2011&pen_year%5B%5D=2010&pres_term=&case_type=&free_text=&hq_id=&state=&page=50&order=parent_name&sort=asc | Controversies/Scandals: The primary adverse information relates to its conviction for operating an unlicensed money transmitting business and related anti-money laundering deficiencies.\n[8] Wire transaction database\n[9] pjbc.gob.mx | https://www.pjbc.gob.mx/boletinj/2026/my_html/bc260112.pdf | Litigation/Proceedings: * A civil proceeding is mentioned in the Baja California Judicial Bulletin, involving GPOMCT Grupo Empresarial, Sociedad Anónima de Capital Variable, against Myrna Araceli Rodríguez Rocha, related to a mortgaged property."
+              }
+            ]
+          },
+          "finish_reason": "FinishReason.STOP"
+        },
+        "usage": {
+          "prompt_token_count": 7761,
+          "candidates_token_count": 1840,
+          "total_token_count": 9843,
+          "thoughts_token_count": 242,
+          "cached_content_token_count": 5041
+        }
+      }
+    ]
+  }
+}
