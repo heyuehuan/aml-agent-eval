@@ -42,4 +42,6 @@ data/localized_weaviate/
 cred/*
 
 # Reference implementation scripts
-reference_implementation/*
+reference_implementation/*run_log/
+data/test_case/
+output/
