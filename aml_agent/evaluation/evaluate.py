@@ -41,6 +41,8 @@ from aml_agent.evaluation.graders import (
     transaction_aggregation_score_llm_grader,
     open_search_urls_reachable_pct_grader,
     open_search_results_relevance_llm_grader,
+    web_search_query_quality_rule_grader,
+    web_search_query_quality_llm_grader,
 )
 from aml_agent.evaluation.types import ExperimentResult
 
@@ -233,12 +235,14 @@ def _build_evaluator_list(args) -> list:
         sql_result_score_recall_grader,
         sql_result_score_precision_grader,
         open_search_urls_reachable_pct_grader,
+        web_search_query_quality_rule_grader,
     ]
     if not getattr(args, "llm_eval_off", False):
         evaluators.append(internal_kb_agent_precision_llm_grader)
         evaluators.append(report_aml_risk_level_accuracy_llm_grader)
         evaluators.append(transaction_aggregation_score_llm_grader)
         evaluators.append(open_search_results_relevance_llm_grader)
+        evaluators.append(web_search_query_quality_llm_grader)
     return evaluators
 
 
