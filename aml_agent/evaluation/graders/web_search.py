@@ -31,7 +31,8 @@ Metrics
 ``web_search_recall_llm``
     LLM-judged fraction of ground-truth expected findings
     (``expected_open_search_results``) that the agent's web searches
-    collectively covered.  Null when no ground truth is provided.
+    collectively covered. When no ground truth is provided, the grader
+    emits ``1.0`` and marks the metric as not applicable in its comment.
 
 See ``CONTRIBUTING_EVALUATION.md`` for guidance on adding graders.
 """
