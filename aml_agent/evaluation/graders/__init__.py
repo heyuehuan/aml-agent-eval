@@ -21,6 +21,8 @@ from .transaction import (
 from .web_search import (
     open_search_urls_reachable_pct_grader,
     open_search_results_relevance_llm_grader,
+    web_search_query_quality_rule_grader,
+    web_search_query_quality_llm_grader,
 )
 from .run import tool_completeness_grader
 from .sql import sql_quality_grader, sql_safety_grader
@@ -40,5 +42,7 @@ __all__ = [
     "open_search_results_relevance_llm_grader",
     "tool_completeness_grader",
     "sql_quality_grader",
-    "sql_safety_grader"
+    "sql_safety_grader",
+    "web_search_query_quality_rule_grader",
+    "web_search_query_quality_llm_grader",
 ]
