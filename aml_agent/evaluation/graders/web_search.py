@@ -779,13 +779,15 @@ def web_search_query_quality_llm_grader(
     - ``web_search_source_relevancy_llm``: credibility of returned sources
       (1–5 → 0.0–1.0).
     - ``web_search_recall_llm``: fraction of ground-truth expected findings
-      (``expected_open_search_results``) covered (0.0–1.0).  Omitted when no
-      ground truth is available. (Score default to 1.0)
+      (``expected_open_search_results``) covered (0.0–1.0). When no ground
+      truth is available, this metric is still returned with a score of 1.0
+      and a comment indicating that it is not applicable.
 
     Returns
     -------
     list[Evaluation]
-        Two or three Evaluations depending on ground-truth availability.
+        Three Evaluations. If ground truth is unavailable, the recall
+        Evaluation is marked not applicable and defaults to 1.0.
     """
     del metadata, kwargs
 
