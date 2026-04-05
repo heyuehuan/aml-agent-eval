@@ -35,5 +35,11 @@ implementations/report_generation/data/*.xls
 implementations/report_generation/data/*.xlsx
 implementations/aml_investigation/data/*.jsonl
 
+# Data outputs (may contain large/sensitive exported data)
+data/localized_weaviate/
+
 # Credentials
 cred/*
+
+# Reference implementation scripts
+reference_implementation/*

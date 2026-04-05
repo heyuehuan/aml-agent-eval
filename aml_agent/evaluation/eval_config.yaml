@@ -1,0 +1,16 @@
+# Evaluation configuration for the AML agent.
+# Paths are relative to the project root.
+
+dataset:
+  name: "aml-agent-test-cases" # Langfuse dataset name (used for upload & experiment)
+  csv_path: "data/test_cases/test_cases.csv"
+  artifacts_dir: "output/test_cases/test_run"
+
+agent:
+  name: "real-time-aml-agent"
+  # temperature: 0.0        # LLM sampling temperature (optional)
+  # timeout_sec: 300        # Model call timeout in seconds (optional)
+
+experiment:
+  max_concurrency: 10      # Max parallel evaluations for pre-computed artifact mode
+  live_max_concurrency: 2  # Max parallel agent runs in --live mode (keeps timing accurate)

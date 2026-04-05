@@ -1,0 +1,37 @@
+[project]
+name = "aml-agent-eval"
+version = "0.1.0"
+description = "AML agent evaluation data preparation and tooling"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "google-adk>=1.0.0",
+    "google-genai>=1.0.0",
+    "sqlalchemy>=2.0",
+    "sqlglot>=20.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "python-dotenv",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+    "weaviate-client>=4.20.4",
+    "langfuse>=3.10.3",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.20.0",
+    "openinference-instrumentation-google-adk>=0.1.0",
+]
+
+[project.scripts]
+aml-agent = "aml_agent.runner:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "iniconfig>=2.0",
+    "pluggy>=1.5",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
