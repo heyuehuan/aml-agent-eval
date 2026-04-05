@@ -357,4 +357,194 @@ def report_completeness_grader(
     ]
 
 
-__all__ = ["report_aml_risk_level_accuracy_llm_grader"]
+# ---------------------------------------------------------------------------
+# report_groundedness — LLM-judged, 4 dimensions
+# ---------------------------------------------------------------------------
+
+GROUNDEDNESS_METRIC_NAME = "report_groundedness_llm"
+_GROUNDEDNESS_SCORE_DIMS = ["attribution", "faithfulness", "coverage", "hallucination"]
+
+_GROUNDEDNESS_SYSTEM_PROMPT = """\
+You are an evaluator for an AML investigation agent.
+
+You are given:
+1. Retrieved evidence (KB watchlist, web/opensearch, transaction matches, transaction match details)
+2. Generated report
+
+Your task:
+Evaluate whether the report is grounded ONLY in the provided evidence.
+
+For each claim in the report:
+- Identify supporting evidence (if any)
+- Flag hallucinations (claims with no evidence support)
+
+Then score each dimension on a 0-2 scale:
+
+1. **Attribution** (0-2): Are claims in the report backed by cited evidence?
+   - 0: No claims cite evidence
+   - 1: Some claims cite evidence, others do not
+   - 2: All substantive claims properly cite their evidence source
+
+2. **Faithfulness** (0-2): Does the report accurately represent what the evidence says?
+   - 0: Report contradicts or significantly misrepresents the evidence
+   - 1: Mostly faithful but contains minor unsupported inferences
+   - 2: All claims are faithful and accurately reflect the evidence
+
+3. **Coverage** (0-2): Does the report reflect all key evidence found?
+   - 0: Report ignores most of the retrieved evidence
+   - 1: Report uses some evidence but omits significant findings
+   - 2: All key evidence is reflected in the report
+
+4. **Hallucination** (0-2): Is the report free of fabricated content?
+   - 0: Contains major fabricated claims not in the evidence
+   - 1: Contains minor embellishments or unverifiable details
+   - 2: No hallucinated content; everything is grounded in evidence
+
+Return ONLY valid JSON (no markdown fences, no extra text). Use this exact schema:
+{
+  "attribution": <0-2>,
+  "faithfulness": <0-2>,
+  "coverage": <0-2>,
+  "hallucination": <0-2>,
+  "justification": "<2-4 sentences explaining the scores, citing specific examples>"
+}
+"""
+
+_GROUNDEDNESS_USER_PROMPT_TEMPLATE = """\
+# Investigation Subject
+{subject}
+
+# Retrieved Evidence
+
+{evidence}
+
+# Generated Report
+
+{report}
+
+Evaluate whether the report is grounded in the provided evidence. Return JSON only.
+"""
+
+
+def _extract_evidence(output: Any) -> str:
+    """Extract all retrieved evidence from tool calls into a structured text block."""
+    if not isinstance(output, dict):
+        return "(no evidence retrieved)"
+
+    sections: list[str] = []
+
+    for tc in output.get("tool_calls", []):
+        tool = tc.get("tool", "")
+        response = tc.get("response", "")
+        args = tc.get("args", {}) or {}
+
+        if tool == "search_knowledgebase":
+            sections.append(
+                f"### KB Watchlist Search\nQuery: {args.get('keyword', '')}\n\n{response}"
+            )
+        elif tool == "web_search":
+            sections.append(
+                f"### Web Search (OpenSearch)\nQuery: {args.get('query', '')}\n\n{response}"
+            )
+        elif tool == "execute":
+            sections.append(
+                f"### SQL Query Result\nQuery: {args.get('query', '')}\n\n{response}"
+            )
+        elif tool == "get_schema_info":
+            sections.append(f"### Database Schema\n{response}")
+
+    for sr in output.get("sql_results", []):
+        rows_text = json.dumps(sr.get("rows", [])[:20], indent=2)
+        sections.append(
+            f"### Transaction Matches (structured)\n"
+            f"Query: {sr.get('query', '')}\n"
+            f"Columns: {sr.get('columns')}\n"
+            f"Rows:\n{rows_text}"
+        )
+
+    return "\n\n---\n\n".join(sections) if sections else "(no evidence retrieved)"
+
+
+def report_groundedness_llm_grader(
+    input: Any,  # noqa: A002
+    output: Any,
+    expected_output: Any,
+    metadata: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -> list[Evaluation]:
+    """LLM-judged groundedness of the agent's report against retrieved evidence.
+
+    Scores the report on four dimensions (0–2 each):
+    - **attribution**: claims backed by cited evidence
+    - **faithfulness**: accurate representation of evidence
+    - **coverage**: all key evidence reflected
+    - **hallucination**: absence of fabricated content
+
+    Returns one ``Evaluation`` per dimension plus a composite score normalised
+    to [0.0, 1.0] (``report_groundedness_composite``).
+    """
+    del input, expected_output, metadata, kwargs
+
+    report = _extract_report(output)
+    subject = (output.get("subject", "") or "") if isinstance(output, dict) else ""
+    evidence = _extract_evidence(output)
+
+    if not report.strip():
+        error_evals = [
+            Evaluation(
+                name=f"{GROUNDEDNESS_METRIC_NAME}_{dim}",
+                value=0.0,
+                comment="No report found in agent output.",
+            )
+            for dim in _GROUNDEDNESS_SCORE_DIMS
+        ]
+        error_evals.append(
+            Evaluation(
+                name=f"{GROUNDEDNESS_METRIC_NAME}_composite",
+                value=0.0,
+                comment="No report found in agent output.",
+            )
+        )
+        return error_evals
+
+    try:
+        user_prompt = _GROUNDEDNESS_USER_PROMPT_TEMPLATE.format(
+            subject=subject,
+            evidence=evidence,
+            report=report,
+        )
+        scores = run_llm_judge_structured(
+            metric_name=GROUNDEDNESS_METRIC_NAME,
+            system_prompt=_GROUNDEDNESS_SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+        )
+
+        justification = scores.get("justification", "")
+        evals = [
+            Evaluation(
+                name=f"{GROUNDEDNESS_METRIC_NAME}_{dim}",
+                value=float(scores[dim]),
+                comment=justification,
+                metadata={"subject": subject},
+            )
+            for dim in _GROUNDEDNESS_SCORE_DIMS
+        ]
+        raw_scores = [float(scores[dim]) for dim in _GROUNDEDNESS_SCORE_DIMS if dim in scores]
+        composite = (sum(raw_scores) / (2.0 * len(raw_scores))) if raw_scores else 0.0
+        evals.append(
+            Evaluation(
+                name=f"{GROUNDEDNESS_METRIC_NAME}_composite",
+                value=round(composite, 3),
+                comment=justification,
+                metadata={"subject": subject, "raw_scores": dict(zip(_GROUNDEDNESS_SCORE_DIMS, raw_scores))},
+            )
+        )
+        return evals
+
+    except Exception as exc:
+        logger.exception("LLM judge failed for %s", GROUNDEDNESS_METRIC_NAME)
+        err_eval = build_judge_error_evaluation(metric_name=GROUNDEDNESS_METRIC_NAME, error=exc)
+        return [err_eval]
+
+
+__all__ = ["report_aml_risk_level_accuracy_llm_grader", "report_groundedness_llm_grader"]

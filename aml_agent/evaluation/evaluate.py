@@ -36,6 +36,7 @@ from aml_agent.evaluation.graders import (
     internal_kb_agent_precision_llm_grader,
     report_aml_risk_level_accuracy_llm_grader,
     report_completeness_grader,
+    report_groundedness_llm_grader,
     sql_result_score_recall_grader,
     sql_result_score_precision_grader,
     transaction_aggregation_score_llm_grader,
@@ -247,6 +248,7 @@ def _build_evaluator_list(args) -> list:
         evaluators.append(sql_quality_grader)
         evaluators.append(internal_kb_agent_precision_llm_grader)
         evaluators.append(report_aml_risk_level_accuracy_llm_grader)
+        evaluators.append(report_groundedness_llm_grader)
         evaluators.append(transaction_aggregation_score_llm_grader)
         evaluators.append(open_search_results_relevance_llm_grader)
         evaluators.append(web_search_query_quality_llm_grader)
