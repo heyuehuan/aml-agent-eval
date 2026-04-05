@@ -393,15 +393,23 @@ class WebSearchTool:
                 "_extract_grounding_sources: %d grounding chunk(s) found", len(chunks)
             )
             for idx, chunk in enumerate(chunks):
-                web = getattr(chunk, "web", None)
-                if web:
-                    title = getattr(web, "title", "") or ""
-                    uri = getattr(web, "uri", "") or ""
-                    if uri:
-                        chunk_map[idx] = (title, uri)
+                # Try `web` first (Google Search grounding), then `retrieved_context`
+                # (Vertex AI Search / other grounding sources).
+                for attr in ("web", "retrieved_context"):
+                    source = getattr(chunk, attr, None)
+                    if source:
+                        title = getattr(source, "title", "") or ""
+                        uri = getattr(source, "uri", "") or ""
+                        if uri:
+                            chunk_map[idx] = (title, uri)
+                            break
 
             if not chunk_map:
-                logger.warning("_extract_grounding_sources: chunks present but none had a web URI")
+                logger.warning(
+                    "_extract_grounding_sources: %d chunk(s) present but none had a web URI "
+                    "(attrs checked: web, retrieved_context)",
+                    len(chunks),
+                )
                 return []
 
             # Build per-chunk excerpt from grounding_supports

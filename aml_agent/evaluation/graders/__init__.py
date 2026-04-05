@@ -21,6 +21,8 @@ from .transaction import (
 from .web_search import (
     open_search_urls_reachable_pct_grader,
     open_search_results_relevance_llm_grader,
+    web_search_query_quality_rule_grader,
+    web_search_query_quality_llm_grader,
 )
 
 __all__ = [
@@ -36,4 +38,6 @@ __all__ = [
     "transaction_aggregation_score_llm_grader",
     "open_search_urls_reachable_pct_grader",
     "open_search_results_relevance_llm_grader",
+    "web_search_query_quality_rule_grader",
+    "web_search_query_quality_llm_grader",
 ]
