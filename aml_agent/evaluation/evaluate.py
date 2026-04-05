@@ -31,12 +31,22 @@ from pathlib import Path
 
 from aml_agent.evaluation.eval_config import load_eval_config
 from aml_agent.evaluation.experiment import run_local_experiment
-from aml_agent.evaluation.graders import \
-    internal_kb_grader, \
-    internal_kb_agent_precision_llm_grader, \
-    tool_completeness_grader, \
-    sql_quality_grader, \
+from aml_agent.evaluation.graders import (
+    internal_kb_grader,
+    internal_kb_agent_precision_llm_grader,
+    report_aml_risk_level_accuracy_llm_grader,
+    report_completeness_grader,
+    sql_result_score_recall_grader,
+    sql_result_score_precision_grader,
+    transaction_aggregation_score_llm_grader,
+    open_search_urls_reachable_pct_grader,
+    open_search_results_relevance_llm_grader,
+    web_search_query_quality_rule_grader,
+    web_search_query_quality_llm_grader,
+    tool_completeness_grader,
+    sql_quality_grader,
     sql_safety_grader
+)
 
 from aml_agent.evaluation.types import ExperimentResult
 
@@ -199,6 +209,18 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    # Load .env from the project root so GOOGLE_API_KEY and other secrets are
+    # available in all modes (local/langfuse/live) before any grader runs.
+    try:
+        from dotenv import load_dotenv  # type: ignore[import-untyped]
+        _project_root = Path(__file__).resolve().parent.parent.parent
+        for _env_file in (_project_root / ".env", Path(".env")):
+            if _env_file.exists():
+                load_dotenv(_env_file, override=False)
+                break
+    except ImportError:
+        pass
+
     cfg = load_eval_config(args.config)
 
     if args.live:
@@ -211,12 +233,23 @@ def main() -> None:
 
 def _build_evaluator_list(args) -> list:
     """Return the list of evaluators, excluding LLM-judge ones if --llm-eval-off."""
-    evaluators = [internal_kb_grader]
-    evaluators.append(tool_completeness_grader)
-    evaluators.append(sql_safety_grader)
+    evaluators = [
+        internal_kb_grader,
+        report_completeness_grader,
+        sql_result_score_recall_grader,
+        sql_result_score_precision_grader,
+        open_search_urls_reachable_pct_grader,
+        web_search_query_quality_rule_grader,
+        tool_completeness_grader,
+        sql_safety_grader
+    ]
     if not getattr(args, "llm_eval_off", False):
         evaluators.append(sql_quality_grader)
         evaluators.append(internal_kb_agent_precision_llm_grader)
+        evaluators.append(report_aml_risk_level_accuracy_llm_grader)
+        evaluators.append(transaction_aggregation_score_llm_grader)
+        evaluators.append(open_search_results_relevance_llm_grader)
+        evaluators.append(web_search_query_quality_llm_grader)
     return evaluators
 
 

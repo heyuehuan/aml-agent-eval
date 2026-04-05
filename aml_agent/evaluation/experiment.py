@@ -60,12 +60,18 @@ def load_test_cases(csv_path: Path) -> list[dict[str, Any]]:
 
 
 def load_artifacts(artifacts_dir: Path, test_case_id: str) -> dict[str, Any] | None:
-    """Load an artifacts JSON sidecar for a test case."""
-    path = artifacts_dir / f"Test_{test_case_id}.artifacts.json"
-    if not path.exists():
-        return None
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    """Load an artifacts JSON sidecar for a test case.
+
+    Tries both ``Test_<TC-ID>.artifacts.json`` (live-run naming) and
+    ``<TC-ID>.artifacts.json`` (saved-output naming) so both directory layouts
+    are supported.
+    """
+    for name in (f"Test_{test_case_id}.artifacts.json", f"{test_case_id}.artifacts.json"):
+        path = artifacts_dir / name
+        if path.exists():
+            with open(path, encoding="utf-8") as f:
+                return json.load(f)
+    return None
 
 
 def _run_evaluators(

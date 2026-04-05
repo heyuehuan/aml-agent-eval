@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -25,6 +26,7 @@ from pathlib import Path
 from typing import Any
 
 from google import genai
+from google.genai import errors as genai_errors
 from google.genai import types
 from opentelemetry import context as otel_context
 
@@ -35,6 +37,24 @@ logger = logging.getLogger(__name__)
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 DEFAULT_JUDGE_MODEL = "gemini-2.5-flash-lite"
+MAX_LLM_AS_A_JUDGE_RETRY = 3
+# Wait times between retries (seconds): short, medium, then a long pause for
+# RPM throttling before the final attempt.
+_RETRY_WAIT_SECONDS = [5, 20, 60]
+
+
+def _is_retriable(exc: Exception) -> bool:
+    """Return True only for transient Gemini errors worth retrying.
+
+    Retries on:
+    - 5xx server errors (e.g. 503 UNAVAILABLE / high demand)
+    - 429 RESOURCE_EXHAUSTED / quota exceeded (ClientError with code 429)
+    """
+    if isinstance(exc, genai_errors.ServerError):
+        return True
+    if isinstance(exc, genai_errors.ClientError) and getattr(exc, "code", None) == 429:
+        return True
+    return False
 
 
 def _get_judge_model() -> str:
@@ -51,7 +71,7 @@ class LLMJudgeConfig:
 
     model: str | None = None
     temperature: float = 0.0
-    max_output_tokens: int = 2048
+    max_output_tokens: int = 8192
 
 
 _LOG_DIR = _PROJECT_ROOT / "run_log" / "llm_as_judge"
@@ -140,22 +160,42 @@ def run_llm_judge(
     # this detach, the judge's latency would be attributed to the agent run.
     _otel_token = otel_context.attach(otel_context.Context())
     t0 = time.monotonic()
+    last_exc: Exception | None = None
+    raw_text = ""
     try:
-        response = client.models.generate_content(
-            model=model,
-            contents=user_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                temperature=cfg.temperature,
-                max_output_tokens=cfg.max_output_tokens,
-                response_mime_type="application/json",
-            ),
-        )
+        for attempt in range(1, MAX_LLM_AS_A_JUDGE_RETRY + 1):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=user_prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_prompt,
+                        temperature=cfg.temperature,
+                        max_output_tokens=cfg.max_output_tokens,
+                        response_mime_type="application/json",
+                    ),
+                )
+                raw_text = response.text or ""
+                last_exc = None
+                break
+            except Exception as exc:
+                last_exc = exc
+                if _is_retriable(exc) and attempt < MAX_LLM_AS_A_JUDGE_RETRY:
+                    wait = _RETRY_WAIT_SECONDS[attempt - 1]
+                    logger.warning(
+                        "LLM judge attempt %d/%d failed (%s). Retrying in %ds…",
+                        attempt, MAX_LLM_AS_A_JUDGE_RETRY, exc, wait,
+                    )
+                    time.sleep(wait)
+                else:
+                    logger.error(
+                        "LLM judge failed after %d attempt(s): %s",
+                        attempt, exc,
+                    )
+                    raise
     finally:
         elapsed = time.monotonic() - t0
         otel_context.detach(_otel_token)
-
-    raw_text = response.text or ""
 
     _log_judge_call(
         metric_name=metric_name,
@@ -193,10 +233,34 @@ def run_llm_judge_structured(
         user_prompt=user_prompt,
         config=config,
     )
+    # Strip markdown fences the model sometimes adds despite instructions
+    stripped = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.MULTILINE).strip()
     try:
-        return json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"LLM judge returned invalid JSON: {raw[:200]}") from exc
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        # The response may be truncated due to hitting the token limit. Retry
+        # with a doubled token budget before giving up.
+        logger.warning(
+            "LLM judge returned invalid JSON for %s (possible truncation) — retrying with higher token limit.",
+            metric_name,
+        )
+        cfg = config or LLMJudgeConfig()
+        retry_cfg = LLMJudgeConfig(
+            model=cfg.model,
+            temperature=cfg.temperature,
+            max_output_tokens=min(cfg.max_output_tokens * 2, 65536),
+        )
+        raw2 = run_llm_judge(
+            metric_name=metric_name,
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            config=retry_cfg,
+        )
+        stripped2 = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw2, flags=re.MULTILINE).strip()
+        try:
+            return json.loads(stripped2)
+        except json.JSONDecodeError as exc2:
+            raise ValueError(f"LLM judge returned invalid JSON: {stripped2[:200]}") from exc2
 
 
 def build_judge_error_evaluation(

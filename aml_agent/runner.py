@@ -33,7 +33,6 @@ from aml_agent.agent import create_aml_agent
 from aml_agent.config import Configs
 from aml_agent.tracing import CallbackTracer, parse_md_table
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -267,7 +266,7 @@ async def run_investigation(
             and resp_text
             and not resp_text.startswith("Query Error")
         ):
-            parsed = _parse_md_table(resp_text)
+            parsed = parse_md_table(resp_text)
             if parsed and len(parsed[0]) > 2 and parsed[1]:
                 artifacts["sql_results"].append({
                     "query": tc_entry["args"].get("query", ""),
@@ -290,6 +289,7 @@ async def run_investigation(
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     parser = argparse.ArgumentParser(description="AML Investigation Agent")
     parser.add_argument("subject", nargs="?", help="Subject name to investigate")
     parser.add_argument("--subject", "-s", dest="subject_flag", help="Subject name (alternative flag)")

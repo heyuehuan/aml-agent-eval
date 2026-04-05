@@ -32,6 +32,7 @@ from google.genai import types
 
 from aml_agent.agent import create_aml_agent
 from aml_agent.config import Configs
+from aml_agent.runner import _parse_report_sections
 from aml_agent.tracing import CallbackTracer, parse_md_table
 
 logger = logging.getLogger(__name__)
@@ -40,6 +41,9 @@ logger = logging.getLogger(__name__)
 warnings.filterwarnings("ignore", message="Inheritance class AiohttpClientSession", category=DeprecationWarning)
 logging.getLogger("google_genai.types").setLevel(logging.ERROR)
 logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("google.adk").setLevel(logging.WARNING)
+logging.getLogger("google_adk").setLevel(logging.WARNING)
+logging.getLogger("aml_agent.tools.web_search").setLevel(logging.WARNING)
 
 # Per-call tracer — each concurrent task sees its own via asyncio ContextVar.
 _current_tracer: ContextVar[CallbackTracer | None] = ContextVar(
@@ -327,6 +331,7 @@ class AmlAgentTask:
 
         return {
             "report_markdown": final_text,
+            "report": _parse_report_sections(final_text),
             "tool_calls": trace_data["tool_calls"],
             "sql_results": sql_results,
             "session_id": session_id,
