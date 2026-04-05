@@ -507,12 +507,13 @@ def _rule_eval_query(query: str, cited_sources: list[dict]) -> dict:
     n = len(tokens)
     stop_ratio = sum(1 for t in tokens if t in _STOP_WORDS) / max(n, 1)
     has_vague = any(t in _VAGUE_TERMS for t in tokens)
-    has_entity = bool(re.search(r'(?<=\s)[A-Z][a-zA-Z]+', query))
+    has_entity = bool(re.search(r'\b[A-Z][a-zA-Z]+', query))
     too_short = n < 2
     too_long = n > 12
     no_sources = len(cited_sources) == 0
     has_gov_source = any(
         re.search(r'\.(gov|justice\.gov|treasury\.gov|ofac)', s.get("url", ""), re.I)
+        for s in cited_sources
         for s in cited_sources
     )
 
