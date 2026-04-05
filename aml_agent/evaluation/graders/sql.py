@@ -10,7 +10,7 @@ from typing import Any
 from .llm_judge import run_llm_judge_structured, build_judge_error_evaluation, LLMJudgeConfig
 from aml_agent.evaluation.types import Evaluation
 import re
-from dataclasses import dataclass, replace
+from dataclasses import replace
 
 formatted_sql_template = """
 [SQL]
