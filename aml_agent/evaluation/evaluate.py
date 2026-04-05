@@ -240,7 +240,7 @@ def _build_evaluator_list(args) -> list:
         sql_result_score_precision_grader,
         open_search_urls_reachable_pct_grader,
         tool_completeness_grader,
-        sql_safety_grader
+        sql_safety_grader,
         web_search_query_quality_rule_grader,
     ]
     if not getattr(args, "llm_eval_off", False):
