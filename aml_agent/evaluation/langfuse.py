@@ -15,6 +15,7 @@ import hashlib
 import json
 import logging
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,41 @@ from .progress import track_with_progress
 from .types import Evaluation as LocalEvaluation, EvaluatorFunction, RunEvaluatorFunction
 
 logger = logging.getLogger(__name__)
+
+
+def _get_git_version_info() -> dict[str, str]:
+    """Return git version metadata for experiment tracking.
+
+    Returns a dict with:
+    - ``model_ver_id``: ``<branch>/<sha7>`` (or just ``<sha7>`` on detached HEAD)
+    - ``model_ver_ts``: commit datetime in EST as ``YYYYMMMDD-HHMMSS``
+      (e.g. ``2026Jan05-143022``)
+    """
+    import datetime
+
+    try:
+        sha = subprocess.check_output(
+            ["git", "rev-parse", "--short=7", "HEAD"],
+            stderr=subprocess.DEVNULL, text=True, timeout=3,
+        ).strip()
+        branch = subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            stderr=subprocess.DEVNULL, text=True, timeout=3,
+        ).strip()
+        commit_ts_unix = subprocess.check_output(
+            ["git", "log", "-1", "--format=%ct"],
+            stderr=subprocess.DEVNULL, text=True, timeout=3,
+        ).strip()
+
+        ver_id = f"{branch}/{sha}" if branch and branch != "HEAD" else sha
+
+        est = datetime.timezone(datetime.timedelta(hours=-5), name="EST")
+        dt = datetime.datetime.fromtimestamp(int(commit_ts_unix), tz=est)
+        ver_ts = dt.strftime("%Y%b%d-%H%M%S")  # e.g. 2026Jan05-143022
+
+        return {"model_ver_id": ver_id, "model_ver_ts": ver_ts}
+    except Exception:
+        return {"model_ver_id": "unknown", "model_ver_ts": "unknown"}
 
 
 def _wrap_evaluator(evaluator: EvaluatorFunction):
@@ -297,6 +333,12 @@ def run_langfuse_experiment(
             return artifacts_cache[tc_id]
 
     name = experiment_name or cfg.agent.name
+    git_info = _get_git_version_info()
+    print(
+        f"Experiment: {name!r}  |  "
+        f"model_ver_id={git_info['model_ver_id']}  "
+        f"model_ver_ts={git_info['model_ver_ts']}"
+    )
     if progress is not None:
         progress.start()
     try:
@@ -307,7 +349,10 @@ def run_langfuse_experiment(
             evaluators=[_wrap_evaluator(e) for e in evaluators],
             run_evaluators=run_evaluators,
             max_concurrency=concurrency,
-            metadata={"agent": cfg.agent.name},
+            metadata={
+                "agent": cfg.agent.name,
+                **git_info,
+            },
         )
     finally:
         if progress is not None:
