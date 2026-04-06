@@ -131,10 +131,10 @@ If ANY condition is not met → verdict is FAIL.
 OUTPUT FORMAT
 ════════════════════════════════════════
 
-Respond ONLY with a valid JSON object for the sql statements provided. No markdown. No explanation 
-outside the JSON. No preamble.
+Respond ONLY with a single valid JSON OBJECT (not an array) for the sql statements provided.
+No markdown. No explanation outside the JSON. No preamble. Do NOT wrap the result in a JSON array.
 
-If there are multiple SQL statements, then summarize all the results into a single json with scores averaged for all. 
+If there are multiple SQL statements, average the scores across all of them and return ONE combined object.
 
 {
   "reasoning": {
@@ -209,6 +209,23 @@ def sql_quality_grader(
                 ),
                 config=replace(LLMJudgeConfig(), max_output_tokens=8096)
         )
+        # Guard: LLM occasionally returns a JSON array despite instructions.
+        # When that happens, average scores across all items and use first item
+        # for verdict/reasoning fields.
+        if isinstance(judge_response, list):
+            if not judge_response:
+                raise ValueError("LLM judge returned an empty JSON array")
+            all_score_keys = {k for item in judge_response for k in item.get("scores", {})}
+            averaged_scores = {
+                k: sum(item.get("scores", {}).get(k, 0) for item in judge_response) / len(judge_response)
+                for k in all_score_keys
+            }
+            judge_response = {
+                "scores": averaged_scores,
+                "verdict": judge_response[0].get("verdict", "FAIL"),
+                "verdict_reason": judge_response[0].get("verdict_reason", ""),
+                "reasoning": judge_response[0].get("reasoning", {}),
+            }
         scores = judge_response.get("scores", {"key": -1})
         score = sum(scores.values()) / len(scores) / 10
         comment = judge_response.get("verdict", "") +" "+ judge_response.get("verdict_reason", "")

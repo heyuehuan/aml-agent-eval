@@ -31,6 +31,7 @@ from google.genai import types
 
 from aml_agent.agent import create_aml_agent
 from aml_agent.config import Configs
+from aml_agent.enforcement import ToolEnforcementCallback
 from aml_agent.tracing import CallbackTracer, parse_md_table
 
 logger = logging.getLogger(__name__)
@@ -185,13 +186,26 @@ async def run_investigation(
         containing the raw tool call/response audit trail.
     """
     tracer = CallbackTracer(capture_tools_info=False)
+    enforcer = ToolEnforcementCallback()
+
+    def _before_model_callback(ctx, req):
+        """Chain: enforcement (injects reminder in-place) → tracer (records request)."""
+        result = enforcer.before_model_callback(ctx, req)
+        if result is not None:
+            return result
+        return tracer.before_model_callback(ctx, req)
+
+    def _after_model_callback(ctx, resp):
+        """Chain: tracer records first; enforcement may override the response."""
+        tracer.after_model_callback(ctx, resp)
+        return enforcer.after_model_callback(ctx, resp)
 
     agent = create_aml_agent(
         configs=configs,
         temperature=temperature,
         timeout_sec=timeout_sec,
-        before_model_callback=tracer.before_model_callback,
-        after_model_callback=tracer.after_model_callback,
+        before_model_callback=_before_model_callback,
+        after_model_callback=_after_model_callback,
     )
 
     runner = Runner(
@@ -258,6 +272,19 @@ async def run_investigation(
     artifacts["token_usage"] = trace_data["token_usage"]
     artifacts["llm_call_history"] = trace_data["llm_call_history"]
     artifacts["trace_metrics"] = trace_data["trace_metrics"]
+
+    enforcement_stats = enforcer.get_stats(session_id)
+    artifacts["enforcement_stats"] = enforcement_stats
+    if enforcement_stats.get("total_enforcements", 0) > 0:
+        logger.info(
+            "[ToolEnforcement] Session %s: %d intervention(s) — "
+            "mid-run reminders=%d, post-intercepts=%d, missing=%s",
+            session_id[:8],
+            enforcement_stats["total_enforcements"],
+            enforcement_stats["mid_run_reminders"],
+            enforcement_stats["post_intercepts"],
+            enforcement_stats["missing_tools"],
+        )
 
     for tc_entry in artifacts["tool_calls"]:
         resp_text = tc_entry.get("response", "")
