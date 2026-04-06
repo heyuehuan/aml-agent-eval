@@ -94,6 +94,22 @@ def _wrap_evaluator(evaluator: EvaluatorFunction):
     return wrapped
 
 
+def _agent_elapsed_sec_evaluator(
+    *, output: Any = None, **kwargs: Any
+):
+    """Built-in evaluator that surfaces agent elapsed_sec as an evaluation column."""
+    from langfuse import Evaluation as LangfuseEvaluation  # type: ignore[import-untyped]
+
+    elapsed = None
+    if isinstance(output, dict):
+        elapsed = output.get("elapsed_sec")
+    return LangfuseEvaluation(
+        name="agent_elapsed_sec",
+        value=elapsed if elapsed is not None else 0.0,
+        comment="Agent wall-clock time (seconds), excludes evaluator latency",
+    )
+
+
 def _load_dotenv() -> None:
     """Load ``.env`` from the project root if python-dotenv is available."""
     try:
@@ -357,7 +373,10 @@ def run_langfuse_experiment(
             name=name,
             data=items,
             task=task,
-            evaluators=[_wrap_evaluator(e) for e in evaluators],
+            evaluators=(
+                [_wrap_evaluator(e) for e in evaluators]
+                + ([_agent_elapsed_sec_evaluator] if is_live else [])
+            ),
             run_evaluators=run_evaluators,
             max_concurrency=concurrency,
             metadata={
