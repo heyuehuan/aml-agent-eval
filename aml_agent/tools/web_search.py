@@ -132,6 +132,15 @@ Conduct enhanced due diligence on "{search_input}". Your goals are to identify a
 
 The provided name or entity may contain errors — find the most accurate match and correct the input if necessary.
 If multiple candidates are found, explain which is the most likely match and justify your reasoning.
+
+**Source priority — strongly prefer authoritative and official sources:**
+- Government and regulatory: OFAC, FinCEN, FINTRAC, FCA, treasury.gov, justice.gov, fbi.gov, sec.gov, sanctionssearch.ofac.treas.gov
+- International bodies: UN Security Council, EU sanctions, Interpol, World Bank debarment
+- Major wire services and investigative journalism: Reuters, AP, BBC, Bloomberg, Financial Times, Wall Street Journal
+- Court records and legal databases: PACER, CanLII, public filing databases
+- Company registries: SEC EDGAR, SEDAR, Companies House, OpenCorporates
+Avoid tabloid, entertainment, or low-credibility sources.
+
 Use reputable, up-to-date public sources, and present the results in a structured and concise way.
 
 For EACH finding, clearly state:
