@@ -192,6 +192,20 @@ class AmlAgentTask:
             before_model_callback=_before_cb,
             after_model_callback=_after_cb,
         )
+
+        # Expose model names sourced directly from the created agent instance
+        # so experiment runners (e.g. langfuse.py) can report exactly what
+        # models this task is using without any env-var look-ups.
+        _na = "unsure or not applicable"
+        self.planner_model: str = getattr(self._agent, "model", None) or _na
+        self.worker_model: str = _na
+        for _t in getattr(self._agent, "tools", []):
+            _fn = getattr(_t, "func", None)
+            _owner = getattr(_fn, "__self__", None) if _fn else None
+            if _owner is not None and hasattr(_owner, "_model_name"):
+                self.worker_model = _owner._model_name
+                break
+
         self._runner = Runner(
             app_name="aml_investigation",
             agent=self._agent,

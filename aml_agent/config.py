@@ -6,10 +6,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv(verbose=True, override=True)
-
 # Project root: directory containing this package
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+load_dotenv(_PROJECT_ROOT / ".env", verbose=True, override=True)
 
 
 @dataclass(frozen=True)

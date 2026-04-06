@@ -294,6 +294,16 @@ def run_langfuse_experiment(
 
     is_live = task is not None
 
+    # Read agent model names directly from the task instance — set from the
+    # actual LlmAgent object, so they reflect exactly what was instantiated.
+    # Evaluator model comes from os.environ since graders have no object to read from.
+    _na = "unsure or not applicable"
+    model_meta: dict[str, Any] = {
+        "planner_model": getattr(task, "planner_model", _na) or _na,
+        "worker_model": getattr(task, "worker_model", _na) or _na,
+        "evaluator_model": os.environ.get("DEFAULT_EVALUATOR_MODEL") or _na,
+    }
+
     ensure_dataset(cfg)
     items = _fetch_and_filter_items(client, cfg, filter_ids)
 
@@ -335,9 +345,10 @@ def run_langfuse_experiment(
     name = experiment_name or cfg.agent.name
     git_info = _get_git_version_info()
     print(
-        f"Experiment: {name!r}  |  "
-        f"model_ver_id={git_info['model_ver_id']}  "
-        f"model_ver_ts={git_info['model_ver_ts']}"
+        f"Agent-{name!r} |Ver {git_info['model_ver_id']} ({git_info['model_ver_ts']})\n"
+        f"  planner:   {model_meta['planner_model']}\n"
+        f"  worker:    {model_meta['worker_model']}\n"
+        f"  evaluator: {model_meta['evaluator_model']}"
     )
     if progress is not None:
         progress.start()
@@ -351,7 +362,11 @@ def run_langfuse_experiment(
             max_concurrency=concurrency,
             metadata={
                 "agent": cfg.agent.name,
-                **git_info,
+                "ver_id": git_info["model_ver_id"],
+                "ver_ts": git_info["model_ver_ts"],
+                "planner": model_meta["planner_model"],
+                "worker": model_meta["worker_model"],
+                "evaluator": model_meta["evaluator_model"],
             },
         )
     finally:
