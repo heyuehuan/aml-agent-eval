@@ -82,8 +82,8 @@ def tool_completeness_grader(
                 },
         ),
         Evaluation(
-            name="tool_hallucination_rate",
-            value = round(tool_hallucination_rate, 2),
+            name="tool_non_hallucination_rate",
+            value=round(1.0 - tool_hallucination_rate, 2),
             comment=f"tools hallucinated: {hallucinated_call}",
             metadata = {
                 "hallucinated_tool_call": hallucinated_call,

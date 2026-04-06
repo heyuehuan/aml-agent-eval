@@ -520,16 +520,17 @@ def report_groundedness_llm_grader(
         )
 
         justification = scores.get("justification", "")
+        raw_scores = [float(scores[dim]) for dim in _GROUNDEDNESS_SCORE_DIMS if dim in scores]
+        # Normalise each dimension from 0-2 scale → 0-1
         evals = [
             Evaluation(
                 name=f"{GROUNDEDNESS_METRIC_NAME}_{dim}",
-                value=float(scores[dim]),
+                value=round(float(scores[dim]) / 2.0, 3),
                 comment=justification,
-                metadata={"subject": subject},
+                metadata={"subject": subject, "raw_score_0_2": float(scores[dim])},
             )
             for dim in _GROUNDEDNESS_SCORE_DIMS
         ]
-        raw_scores = [float(scores[dim]) for dim in _GROUNDEDNESS_SCORE_DIMS if dim in scores]
         composite = (sum(raw_scores) / (2.0 * len(raw_scores))) if raw_scores else 0.0
         evals.append(
             Evaluation(
@@ -543,8 +544,18 @@ def report_groundedness_llm_grader(
 
     except Exception as exc:
         logger.exception("LLM judge failed for %s", GROUNDEDNESS_METRIC_NAME)
-        err_eval = build_judge_error_evaluation(metric_name=GROUNDEDNESS_METRIC_NAME, error=exc)
-        return [err_eval]
+        err_evals = [
+            build_judge_error_evaluation(
+                metric_name=f"{GROUNDEDNESS_METRIC_NAME}_{dim}", error=exc
+            )
+            for dim in _GROUNDEDNESS_SCORE_DIMS
+        ]
+        err_evals.append(
+            build_judge_error_evaluation(
+                metric_name=f"{GROUNDEDNESS_METRIC_NAME}_composite", error=exc
+            )
+        )
+        return err_evals
 
 
 __all__ = ["report_aml_risk_level_accuracy_llm_grader", "report_groundedness_llm_grader"]

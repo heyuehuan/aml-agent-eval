@@ -515,7 +515,6 @@ def _rule_eval_query(query: str, cited_sources: list[dict]) -> dict:
     has_gov_source = any(
         re.search(r'\.(gov|justice\.gov|treasury\.gov|ofac)', s.get("url", ""), re.I)
         for s in cited_sources
-        for s in cited_sources
     )
 
     flags: list[str] = []
@@ -882,7 +881,7 @@ def web_search_query_quality_llm_grader(
         evaluations.append(
             Evaluation(
                 name=_QUERY_QUALITY_METRIC,
-                value=round(avg_qq / 5.0, 3),
+                value=round((avg_qq - 1) / 4.0, 3),
                 comment=(
                     f"{len(qq_scores)}/{len(events)} queries judged. "
                     f"Avg quality: {avg_qq:.2f}/5."
@@ -919,7 +918,7 @@ def web_search_query_quality_llm_grader(
         evaluations.append(
             Evaluation(
                 name=_SOURCE_RELEVANCY_METRIC2,
-                value=round(avg_sr / 5.0, 3),
+                value=round((avg_sr - 1) / 4.0, 3),
                 comment=f"Avg source relevancy: {avg_sr:.2f}/5.",
                 metadata={
                     "avg_raw_score": round(avg_sr, 3),
