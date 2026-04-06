@@ -5,6 +5,7 @@ using SQLGlot to prevent any write operations.
 """
 
 import logging
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
@@ -126,7 +127,30 @@ class ReadOnlySqlDatabase:
             return is_safe
         except Exception as e:
             logger.error("SQL parsing error: %s", e)
+            # SQLGlot may fail on very long or complex queries that are still
+            # valid read-only SQL.  Fall back to a conservative regex check so
+            # that legitimate SELECT queries are not blocked by a parser bug.
+            return self._regex_fallback_is_safe(query)
+
+    def _regex_fallback_is_safe(self, query: str) -> bool:
+        """Last-resort regex check when AST parsing fails.
+
+        Returns True only when the query looks like a plain SELECT with no
+        write keywords.  This is intentionally conservative.
+        """
+        normalized = query.strip().rstrip(";").strip()
+        if not normalized.upper().startswith("SELECT"):
             return False
+        # Check for any write keyword at word boundaries
+        write_keywords = (
+            r"\b(INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE|MERGE"
+            r"|REPLACE|ATTACH|DETACH|PRAGMA)\b"
+        )
+        if re.search(write_keywords, normalized, re.IGNORECASE):
+            logger.warning("Regex fallback: found write keyword in query")
+            return False
+        logger.info("Regex fallback: allowing SELECT query that failed AST parsing")
+        return True
 
     def get_schema_info(self, table_names: Optional[list[str]] = None) -> str:
         """Return schema for specific tables/views or all if None.
