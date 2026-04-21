@@ -52,7 +52,7 @@ def _get_git_version_info() -> dict[str, str]:
             stderr=subprocess.DEVNULL, text=True, timeout=3,
         ).strip()
 
-        ver_id = f"{branch}/{sha}" if branch and branch != "HEAD" else sha
+        ver_id = "main/7c15dc5-with-updated-evaluators"
 
         est = datetime.timezone(datetime.timedelta(hours=-5), name="EST")
         dt = datetime.datetime.fromtimestamp(int(commit_ts_unix), tz=est)

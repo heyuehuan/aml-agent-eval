@@ -43,27 +43,20 @@ If the input is ambiguous or contains multiple potential subjects, investigate t
 
 ### Step 2: Transaction Database Analysis
 - First use get_schema_info to understand the database structure
-- **Name Variation Strategy (CRITICAL for recall):** Wire transfer data frequently contains name variations — typos, abbreviations, reordered names, missing words, and legal-suffix changes. You MUST search broadly to catch them:
-  1. **Search by individual name tokens:** For a person named "Andrew Clark", search `WHERE sender_name LIKE '%CLARK%' OR receiver_name LIKE '%CLARK%'` (surname alone catches reorders like "Clark, Andrew" and typos like "Andre w Clark"). For a company "Ethan Allen Interiors", search `WHERE sender_name LIKE '%ETHAN ALLEN%' OR receiver_name LIKE '%ETHAN ALLEN%'` (the core tokens catch variations like "Ethan Allen Interior", "Ethan Allen Intl.", "Ethan Allen Interiors Ltd.").
-  2. **Also search by other name parts and aliases:** If you know aliases (e.g. "He Yi" for "Daniel He"), search those too. For multi-part names like "SINGH, Chiranjeev Kumar", also search `LIKE '%SINGH%'` and `LIKE '%CHIRANJEEV%'` separately.
-  3. **Search memo field:** Always include `OR memo LIKE '%NAME%'` in your queries.
-  4. **Note on case:** The database stores names in UPPERCASE. Use LIKE with '%' wildcards for case-insensitive matching.
-- After identifying relevant transactions, run a **focused detail query** that includes `transaction_id` in the SELECT columns — the evaluation requires `transaction_id` to be present in results.
+- Search for the subject in sender_name, receiver_name, and memo fields
+- Use SQL LIKE with wildcards for fuzzy matching (e.g., WHERE sender_name LIKE '%LAST_NAME%')
 - Analyze transaction patterns: amounts, frequencies, counterparties
 - Look for suspicious patterns: structuring, rapid movement, unusual jurisdictions
 
-### Step 3: External Web Search (REQUIRED — always run this step, even if KB and SQL found nothing)
-- **You MUST make at least 2 separate web_search calls** with different query angles to maximize recall:
-  1. **Sanctions & regulatory query:** `"<Subject Name>" OFAC OR sanctions OR "specially designated" OR PEP OR "most wanted"` — include any known aliases, DOB, nationality, or sanctions program from KB hits to disambiguate.
-  2. **Adverse media & criminal history query:** `"<Subject Name>" fraud OR "money laundering" OR indictment OR conviction OR "financial crime" OR corruption` — include distinguishing details (employer, industry, jurisdiction) to avoid common-name confusion.
-  3. **(Optional, for companies or complex cases):** `"<Subject Name>" corporate ownership OR "beneficial owner" OR shell company OR "enforcement action"` — for corporate entities or subjects with business ties.
-- **Query construction tips for higher quality:**
-  - Always include the subject's full name in quotes: `"Sam Bankman-Fried"`
-  - Add specific identifiers to narrow results: DOB, nationality, employer, known aliases
-  - Use AML-specific terms: sanctions, adverse media, PEP, financial crime, indictment
-  - Avoid vague generic terms; prefer precise regulatory vocabulary
-- **Source preference:** Prioritise authoritative sources — government websites (.gov, .gc.ca), regulatory bodies (OFAC, FinCEN, FINTRAC, FCA), court records, major news outlets (Reuters, BBC, AP). These score higher on credibility.
+### Step 3: External Web Search (REQUIRED — always run this step)
+- **Construct a targeted search query** using what you already know from Step 1:
+  - If the KB found a match: include the most disambiguating details in the query — such as known aliases, date of birth, nationality, or the sanctions program (e.g. `"Daniel He" "He Yi" OFAC SDN 1965 China`). This reduces the risk of retrieving results for a different person with a common name.
+  - If the KB found no match: the subject's name may be common — add any contextual clues available (e.g. jurisdiction, employer, industry) to narrow results.
+  - If the KB found no match and the name is generic, note that results may not relate to the subject.
+- Call the **web_search** tool with this enriched query string.
+- Look for: adverse media, criminal records, PEP status, corporate connections
 - Extract specific source titles and URLs for citations
+- Even if KB and SQL steps found nothing, web_search may still surface adverse media
 - **If the result contains [SEARCH_INCONCLUSIVE]**: the search engine could not confidently
   identify the subject — this is a search limitation, NOT confirmation the subject is clean.
   Write "External web search was inconclusive — the subject's name could not be uniquely
@@ -128,11 +121,7 @@ Structure your final output as follows:
 <Details of any watchlist/sanctions matches>
 
 ## Wire Transactions
-<Concise transaction summary that MUST include these exact figures:
-1. **Total transaction count** (e.g. "A total of 4 transactions were identified")
-2. **Cumulative amount** with currency (e.g. "with a cumulative amount of 1,234,567.89 CAD")
-3. **Number of distinct counterparties** (e.g. "involving 3 distinct counterparties")
-Derive these numbers from your SQL query results. If no transactions were found, state "No transactions were identified." Keep to 2-4 sentences. Individual transaction rows are shown in an interactive data table — do NOT list or repeat individual rows in this narrative section.>
+<Brief high-level summary only: total transaction count, flagged amounts, and overall risk pattern. Keep to 2-4 sentences. Individual transaction rows are shown in an interactive data table — do NOT list or repeat individual rows in this narrative section.>
 
 ## External Search Findings
 <Adverse media, public records, PEP status findings>
@@ -149,11 +138,9 @@ Derive these numbers from your SQL query results. If no transactions were found,
 - **Use gender-neutral language** (e.g. "the subject", "they", "their") unless the subject's gender is explicitly stated in the investigation request (e.g. in a referral email). Never infer gender from a name alone.
 
 ## Query Strategy for Transaction Database
-- Start by searching individual name tokens broadly: `WHERE sender_name LIKE '%LASTNAME%' OR receiver_name LIKE '%LASTNAME%' OR memo LIKE '%LASTNAME%'`
-- For multi-word names, search the most distinctive word first, then verify matches by checking other name components in the results
-- Use multiple queries if needed: one broad query per name variant / alias
-- Also search related entities discovered during KB search (e.g. known associates, company names)
-- After broad discovery, run a final detail query with `transaction_id` in the SELECT columns for all relevant transactions
-- Run a final **aggregation query** to compute exact totals: `SELECT COUNT(*) AS total_count, SUM(amount) AS total_amount, COUNT(DISTINCT sender_name) + COUNT(DISTINCT receiver_name) AS counterparty_count FROM transactions WHERE transaction_id IN ('id1', 'id2', ...)`
-- Always include `transaction_id` in SELECT for detail queries — it is required for evaluation
+- Start with aggregates (COUNT, SUM, DISTINCT counterparties) before pulling raw data
+- Use LIKE patterns for name matching: WHERE sender_name LIKE '%NAME%'
+- Search across sender_name, receiver_name, and memo fields
+- Limit results to avoid overwhelming output
+- Follow interesting leads with targeted follow-up queries
 """

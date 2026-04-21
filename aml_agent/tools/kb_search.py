@@ -101,10 +101,6 @@ class KBSearchTool:
         Maximum number of results to return per search.
     snippet_length : int
         Maximum character length of text snippets.
-    max_distance : float
-        Maximum vector distance (0–2 for cosine).  Results farther than this
-        threshold are silently dropped to avoid returning irrelevant neighbours
-        when the subject is not in the knowledge base.
     """
 
     def __init__(
@@ -112,12 +108,10 @@ class KBSearchTool:
         weaviate_config: WeaviateConfig,
         num_results: int = 5,
         snippet_length: int = 500,
-        max_distance: float = 0.45,
     ) -> None:
         self._cfg = weaviate_config
         self.num_results = num_results
         self.snippet_length = snippet_length
-        self.max_distance = max_distance
         self._client: weaviate.WeaviateClient | None = None
 
     def _connect(self) -> None:
@@ -185,24 +179,6 @@ class KBSearchTool:
                 limit=self.num_results,
                 return_metadata=wq.MetadataQuery(distance=True),
             )
-
-            # Filter vector results by distance threshold to avoid returning
-            # irrelevant nearest neighbours when the subject is not in the KB.
-            if response.objects:
-                filtered = []
-                for obj in response.objects:
-                    dist = getattr(obj.metadata, "distance", None)
-                    if dist is not None and dist > self.max_distance:
-                        logger.debug(
-                            "[KB] Dropping result (distance=%.4f > %.2f): %s",
-                            dist,
-                            self.max_distance,
-                            obj.properties.get("title", ""),
-                        )
-                        continue
-                    filtered.append(obj)
-                response.objects = filtered
-
             use_bm25 = not response.objects
             if use_bm25:
                 response = collection.query.bm25(query=keyword, limit=self.num_results)

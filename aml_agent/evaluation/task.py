@@ -32,7 +32,6 @@ from google.genai import types
 
 from aml_agent.agent import create_aml_agent
 from aml_agent.config import Configs
-from aml_agent.enforcement import ToolEnforcementCallback
 from aml_agent.runner import _parse_report_sections
 from aml_agent.tracing import CallbackTracer, parse_md_table
 
@@ -49,10 +48,6 @@ logging.getLogger("aml_agent.tools.web_search").setLevel(logging.WARNING)
 # Per-call tracer — each concurrent task sees its own via asyncio ContextVar.
 _current_tracer: ContextVar[CallbackTracer | None] = ContextVar(
     "_current_tracer", default=None
-)
-# Per-call enforcer — stateful per session, must not be shared across concurrent calls.
-_current_enforcer: ContextVar[ToolEnforcementCallback | None] = ContextVar(
-    "_current_enforcer", default=None
 )
 
 _TOOL_QUERY_KEY: dict[str, str] = {
@@ -178,14 +173,7 @@ class AmlAgentTask:
             init_tracing(service_name="aml-agent")
 
         # Dispatch callbacks to the tracer active in the current asyncio context.
-        # Enforcement is per-call (stateful per session) — created in __call__
-        # and stored in a ContextVar so concurrent runs don't share state.
         def _before_cb(callback_context: Any, llm_request: Any) -> None:
-            enforcer = _current_enforcer.get()
-            if enforcer is not None:
-                result = enforcer.before_model_callback(callback_context, llm_request)
-                if result is not None:
-                    return result
             tracer = _current_tracer.get()
             if tracer is not None:
                 return tracer.before_model_callback(callback_context, llm_request)
@@ -194,12 +182,7 @@ class AmlAgentTask:
         def _after_cb(callback_context: Any, llm_response: Any) -> None:
             tracer = _current_tracer.get()
             if tracer is not None:
-                tracer.after_model_callback(callback_context, llm_response)
-            enforcer = _current_enforcer.get()
-            if enforcer is not None:
-                result = enforcer.after_model_callback(callback_context, llm_response)
-                if result is not None:
-                    return result
+                return tracer.after_model_callback(callback_context, llm_response)
             return None
 
         self._agent = create_aml_agent(
@@ -272,11 +255,9 @@ class AmlAgentTask:
 
         session_id = str(uuid.uuid4())
 
-        # Fresh tracer and enforcer bound to this asyncio task context.
+        # Fresh tracer bound to this asyncio task context.
         tracer = CallbackTracer()
-        enforcer = ToolEnforcementCallback()
         token = _current_tracer.set(tracer)
-        enforcer_token = _current_enforcer.set(enforcer)
 
         final_text = ""
         try:
@@ -327,7 +308,6 @@ class AmlAgentTask:
                         final_text = final_text[m.start():]
         finally:
             _current_tracer.reset(token)
-            _current_enforcer.reset(enforcer_token)
 
         tracer.mark_finished()
 
